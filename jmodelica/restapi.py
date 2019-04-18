@@ -8,6 +8,7 @@ The API is implemented using the ``flask`` package.
 # ----------------------
 from flask import Flask
 from flask_restful import Resource, Api, reqparse
+import sys
 # ----------------------
 
 # TEST CASE IMPORT

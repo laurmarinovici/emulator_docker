@@ -1,0 +1,2 @@
+ls -lat
+exit
