@@ -79,10 +79,16 @@ class TestCase(object):
             u_trajectory = self.start_time
             for key in u.keys():
                 if key != 'time':
+                    if key.find("oveOutAirFra_u") > 0 or key.find("oveHeaOut_u") > 0:
+                        print("key: ", key)
+                        print("value:", u[key])
                     value = float(u[key])
                     u_list.append(key)
                     u_trajectory = np.vstack((u_trajectory, value))
             input_object = (u_list, np.transpose(u_trajectory))
+            # print("u_list length: ", len(u_list))
+            # print("u_trajectory length: ", len(u_trajectory))
+            # print(input_object)
         else:
             input_object = None
         # Simulate

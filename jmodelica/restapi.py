@@ -51,7 +51,7 @@ class Advance(Resource):
         u = parser_advance.parse_args()
  #       print u
         y = case.advance(u)
-        print y
+        # print y
         return y
 
 class Reset(Resource):
@@ -60,8 +60,8 @@ class Reset(Resource):
     def put(self):
         '''PUT request to reset the test.'''
         u = parser_reset.parse_args()
-        print 'yes'
-        print u
+        # print 'yes'
+        # print u
         start=u['start']
         case.reset(start)
         return 'Testcase reset.'
@@ -78,7 +78,7 @@ class Step(Resource):
     def put(self):
         '''PUT request to set simulation step in seconds.'''
         args = parser_step.parse_args()
-        print args
+        # print args
         step = args['step']
         case.set_step(step)
         return step, 201
