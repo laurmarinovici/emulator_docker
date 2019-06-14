@@ -49,9 +49,11 @@ class Advance(Resource):
         '''POST request with input data to advance the simulation one step 
         and receive current measurements.'''
         u = parser_advance.parse_args()
- #       print u
+        # print u
         y = case.advance(u)
         # print y
+        yCelsius = y['TOutDryBul_y'] - 273.15
+        print 'Outside temperature: {0} deg Kelvin ({1} deg Celsius).'.format(y['TOutDryBul_y'], yCelsius)
         return y
 
 class Reset(Resource):

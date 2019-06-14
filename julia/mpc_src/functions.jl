@@ -613,9 +613,9 @@ function predictloads(history::DataFrames.DataFrame)
                 for row in 1:(size(history, 1) - 1)
 
                     # extract variables of interest
-                    temp = history[row, Symbol("floor$(f)_Zon$(z)_TRooAir_y")] # ("zonetemp_f$(f)z$z")]
-                    flow = history[row, Symbol("floor$(f)_Zon$(z)_mSupAir_y")] # ("zoneflow_f$(f)z$z")]
-                    dischargetemp = history[row, Symbol("floor$(f)_Zon$(z)_TSupAir_y")] # ("zonedischargetemp_f$(f)z$z")]
+                    temp = history[row, Symbol("floor$(f)_zon$(z)_TRooAir_y")] # ("zonetemp_f$(f)z$z")]
+                    flow = history[row, Symbol("floor$(f)_zon$(z)_mSupAir_y")] # ("zoneflow_f$(f)z$z")]
+                    dischargetemp = history[row, Symbol("floor$(f)_zon$(z)_TSupAir_y")] # ("zonedischargetemp_f$(f)z$z")]
                     ambient = history[row, Symbol("TOutDryBul_y")] # ("outside_temp")]
                     alpha = p.zonetemp_alpha[f, z]
                     beta = p.zonetemp_beta[f, z]
@@ -624,7 +624,7 @@ function predictloads(history::DataFrames.DataFrame)
                     # predicted temp (from model) for data in row+1 given data in row
                     pred =  alpha * temp +  beta * flow * (dischargetemp - temp) + gamma * ambient
                     # actual observation for data in row+1
-                    actual = history[row + 1, Symbol("floor$(f)_Zon$(z)_TRooAir_y")] # ("zonetemp_f$(f)z$z")]
+                    actual = history[row + 1, Symbol("floor$(f)_zon$(z)_TRooAir_y")] # ("zonetemp_f$(f)z$z")]
                     sum_error += (actual - pred)
                 end
                 loads[f, z, :] = sum_error / o.cl_MAwindow  # average of the mispredictions
@@ -644,13 +644,15 @@ function setoverrides!(df::DataFrames.DataFrame;
     if control == "MPC"
         for f = 1:p.numfloors
                 # damper setpoint
-                # df[Symbol("set_ahudamper_f$f")] = JuMP.value(ahudamper[f, 1])
+                df[Symbol("floor$(f)_aHU_con_oveMinOAFra_activate")] = 1
+                df[Symbol("floor$(f)_aHU_con_oveMinOAFra_u")] = JuMP.value(ahudamper[f, 1])
 
                 # ahu supply temperatures
+                df[Symbol("floor$(f)_aHU_con_oveTSetSupAir_activate")] = 1
                 if unit == "Kelvin"
-                    df[Symbol("set_ahusupplytemp_f$f")] = JuMP.value(ahusupplytemp[f, 1]) + 273.15
+                    df[Symbol("floor$(f)_aHU_con_oveTSetSupAir_u")] = JuMP.value(ahusupplytemp[f, 1]) + 273.15
                 else
-                    df[Symbol("set_ahusupplytemp_f$f")] = JuMP.value(ahusupplytemp[f, 1])
+                    df[Symbol("floor$(f)_aHU_con_oveTSetSupAir_u")] = JuMP.value(ahusupplytemp[f, 1])
                 end
 
                 # static pressure setpoint
@@ -659,61 +661,43 @@ function setoverrides!(df::DataFrames.DataFrame;
 
                 ## zone-level setpoints
                 for z = 1:p.numzones
-                    # damper setpoint
-                    df[Symbol("floor$(f)_Zon$(z)_oveAirFloRat_activate")] = 1
-                    df[Symbol("floor$(f)_Zon$(z)_oveAirFloRat_u")] = JuMP.value(ahudamper[f, 1])
-
-                    # ahu supply temperatures
-                    df[Symbol("floor$(f)_Zon$(z)_con_oveTSetSupAir_activate")] = 1
-                    if unit == "Kelvin"
-                        df[Symbol("floor$(f)_Zon$(z)_con_oveTSetSupAir_u")] = JuMP.value(ahusupplytemp[f, 1]) + 273.15
-                    else
-                        df[Symbol("floor$(f)_Zon$(z)_con_oveTSetSupAir_u")] = JuMP.value(ahusupplytemp[f, 1])
-                    end
-
                     # zone flows
-                    df[Symbol("floor$(f)_Zon$(z)_oveOutAirFra_activate")] = 1
-                    df[Symbol("floor$(f)_Zon$(z)_oveOutAirFra_u")] = JuMP.value(zoneflow[f, z, 1])/p.zoneflow_max[z]
+                    df[Symbol("floor$(f)_zon$(z)_oveAirFloRat_activate")] = 1
+                    df[Symbol("floor$(f)_zon$(z)_oveAirFloRat_u")] = JuMP.value(zoneflow[f, z, 1])/p.zoneflow_max[z]
 
-                    df[Symbol("floor$(f)_Zon$(z)_oveHeaOut_activate")] = 1
-                    df[Symbol("floor$(f)_Zon$(z)_oveHeaOut_u")] = (JuMP.value(zonedischargetemp[f, z, 1]) - JuMP.value(ahusupplytemp[f, 1])) / (p.zonedischargetemp_max - JuMP.value(ahusupplytemp[f, 1]))
+                    df[Symbol("floor$(f)_zon$(z)_oveHeaOut_activate")] = 1
+                    df[Symbol("floor$(f)_zon$(z)_oveHeaOut_u")] = (JuMP.value(zonedischargetemp[f, z, 1]) - JuMP.value(ahusupplytemp[f, 1])) / (p.zonedischargetemp_max - JuMP.value(ahusupplytemp[f, 1]))
 
-                    # discharge temperatures ???????????????????????
-                    # if unit == "Kelvin"
-                        #df[Symbol("set_zonedischargetemp_f$(f)z$z")] = JuMP.value(zonedischargetemp[f, z, 1]) + 273.15
-                    # else
-                        #df[Symbol("set_zonedischargetemp_f$(f)z$z")] = JuMP.value(zonedischargetemp[f, z, 1])
-                    #end
+                    # discharge temperatures - this is just for data saving purpose
+                    # and it comes in Celsius from the MPC algorithm
+                    df[Symbol("floor$(f)_zon$(z)_oveTSetDisAir_activate")] = 1
+                    df[Symbol("floor$(f)_zon$(z)_oveTSetDisAir_u")] = JuMP.value(zonedischargetemp[f, z, 1])
                 end
         end
     elseif control == "DEFAULT"
         for f = 1:p.numfloors
             # damper setpoint
-            # df[Symbol("set_ahudamper_f$f")] = default
-            # df[Symbol("set_ahusupplytemp_f$f")] = default
+            df[Symbol("floor$(f)_aHU_con_oveMinOAFra_activate")] = 0
+            df[Symbol("floor$(f)_aHU_con_oveMinOAFra_u")] = default
+            # ahu supply temperatures
+            df[Symbol("floor$(f)_aHU_con_oveTSetSupAir_activate")] = 0
+            df[Symbol("floor$(f)_aHU_con_oveTSetSupAir_u")] = default
 
             # static pressure setpoint
             df[Symbol("set_ahupressure_f$f")] = default
 
             ## zone-level setpoints
             for z = 1:p.numzones
-                # damper setpoint
-                df[Symbol("floor$(f)_Zon$(z)_oveAirFloRat_activate")] = 0
-                df[Symbol("floor$(f)_Zon$(z)_oveAirFloRat_u")] = default
-                df[Symbol("floor$(f)_Zon$(z)_con_oveTSetSupAir_activate")] = 0
-                df[Symbol("floor$(f)_Zon$(z)_con_oveTSetSupAir_u")] = default
-                # static pressure setpoint
-                # df[Symbol("set_ahupressure_f$f")] = default ??????????????????????
                 # zone flows
-                # df[Symbol("set_zoneflow_f$(f)z$z")] = default
-                df[Symbol("floor$(f)_Zon$(z)_oveOutAirFra_activate")] = 0
-                df[Symbol("floor$(f)_Zon$(z)_oveOutAirFra_u")] = default
+                df[Symbol("floor$(f)_zon$(z)_oveAirFloRat_activate")] = 0
+                df[Symbol("floor$(f)_zon$(z)_oveAirFloRat_u")] = default
 
-                df[Symbol("floor$(f)_Zon$(z)_oveHeaOut_activate")] = 0
-                df[Symbol("floor$(f)_Zon$(z)_oveHeaOut_u")] = default
+                df[Symbol("floor$(f)_zon$(z)_oveHeaOut_activate")] = 0
+                df[Symbol("floor$(f)_zon$(z)_oveHeaOut_u")] = default
 
-                # discharge temperatures ????????????????????????????????
-                # df[Symbol("set_zonedischargetemp_f$(f)z$z")] = default
+                # discharge temperatures - this is just for data saving purpose
+                df[Symbol("floor$(f)_zon$(z)_oveTSetDisAir_activate")] = 0
+                df[Symbol("floor$(f)_zon$(z)_oveTSetDisAir_u")] = default
             end
         end
     else
@@ -741,8 +725,8 @@ function setoverrides!(target::DataFrames.DataFrame,
         # special case: 5:59 am (maximize the flow)
         if minute_of_day == 6 * 60.0 - 1.0
             for f = 1:p.numfloors, z = 1:p.numzones
-                target[1, Symbol("floor$(f)_Zon$(z)_oveOutAirFra_activate")] = 1
-                target[1, Symbol("floor$(f)_Zon$(z)_oveOutAirFra_u")] = p.zoneflow_max[z]/p.zoneflow_max[z]
+                target[1, Symbol("floor$(f)_zon$(z)_oveAirFloRat_activate")] = 1
+                target[1, Symbol("floor$(f)_zon$(z)_oveAirFloRat_u")] = p.zoneflow_max[z]/p.zoneflow_max[z]
             end
         end
     else
@@ -780,7 +764,7 @@ function updatemodelparams(df::DataFrames.DataFrame, params::Dict)
 
     # update initial zone temperature
     for fInd = 1:p.numfloors, zInd = 1:p.numzones
-        JuMP.set_value(zonetemp_init[fInd, zInd], df[1, Symbol("floor$(fInd)_Zon$(zInd)_TRooAir_y")]) #  "zonetemp_f$(fInd)z$(zInd)")])
+        JuMP.set_value(zonetemp_init[fInd, zInd], df[1, Symbol("floor$(fInd)_zon$(zInd)_TRooAir_y")]) #  "zonetemp_f$(fInd)z$(zInd)")])
     end
 
     # first set zone flows to correct bounds (if it was currently in state 1)
@@ -849,9 +833,9 @@ function kelvintocelsius!(df::DataFrames.DataFrame)
         ## zone-level variables
         for z in 1:p.numzones
             # zone temps
-            df[1, Symbol("floor$(f)_Zon$(z)_TRooAir_y")] -= 273.15 # zonetemp_f$(f)z$z
+            df[1, Symbol("floor$(f)_zon$(z)_TRooAir_y")] -= 273.15 # zonetemp_f$(f)z$z
             # discharge temps
-            df[1, Symbol("floor$(f)_Zon$(z)_TSupAir_y")] -= 273.15 # zonedischargetemp_f$(f)z$z
+            df[1, Symbol("floor$(f)_zon$(z)_TSupAir_y")] -= 273.15 # zonedischargetemp_f$(f)z$z
             # zone return temps
             # ????????????????????????? This one does not exist at this time
             # df[1, Symbol("zonereturntemp_f$(f)z$z")] -= 273.15
@@ -970,22 +954,18 @@ function saveresults(dfMeasurements::DataFrames.DataFrame,
 
     # store setpoint temperatures
     for f = 1:p.numfloors
+        # supply-air temperature setpoint AHU
+        name = Symbol("floor$(f)_aHU_con_oveTSetSupAir_u")
+        if unit == "Kelvin"
+            d[1, name] = dfSetpoints[1, name] - 273.15 # store as celsius
+        else
+            d[1, name] = dfSetpoints[1, name]  # already in celsius
+        end
         for z = 1:p.numzones
-            # supply-air setpointd AHU
-            name = Symbol("floor$(f)_Zon$(z)_con_oveTSetSupAir_u") # ("set_ahusupplytemp_f$f")
-            if unit == "Kelvin"
-                d[1, name] = dfSetpoints[1, name] - 273.15 # store as celsius
-            else
-                d[1, name] = dfSetpoints[1, name]  # already in celsius
-            end
-
             # discharge-air temperatures at zones
-            #var = Symbol("set_zonedischargetemp_f$(f)z$z")  # ??????????????????????????????
-            #if unit == "Kelvin"
-            #    d[1, var] = dfSetpoints[1, var] - 273.15 # store as celsius
-            #else
-            #    d[1, var] = dfSetpoints[1, var] # already in celsius
-            #end
+            # these are for saving purposes only, so will be kept as they get calculated, in Celsius
+            name = Symbol("floor$(f)_zon$(z)_oveTSetDisAir_u")
+            d[1, name] = dfSetpoints[1, name] # already in celsius
         end
     end
 

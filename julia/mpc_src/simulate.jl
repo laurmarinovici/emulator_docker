@@ -6,9 +6,13 @@ const MOI = MathOptInterface
 println("Including other functions ....")
 # import the Julia script with the optimization model and associated dependencies
 include("functions.jl")
-# include("fakeMeasurements.jl")
-# include("fakeParams.jl")
-# include("fakeSetpoints.jl")
+
+# defining the possible optimization solver status, in order to make decissions
+# on how to proceed further
+status_goodSolution = [MOI.OPTIMAL, MOI.LOCALLY_SOLVED, MOI.ALMOST_OPTIMAL]
+status_badSolution = [MOI.ALMOST_LOCALLY_SOLVED, MOI.INFEASIBLE, MOI.DUAL_INFEASIBLE, MOI.LOCALLY_INFEASIBLE, MOI.INFEASIBLE_OR_UNBOUNDED, MOI.ALMOST_INFEASIBLE, MOI.ALMOST_DUAL_INFEASIBLE]
+status_userLim = [MOI.ITERATION_LIMIT, MOI.TIME_LIMIT, MOI.NODE_LIMIT, MOI.SOLUTION_LIMIT, MOI.MEMORY_LIMIT, MOI.OBJECTIVE_LIMIT, MOI.NORM_LIMIT, MOI.OTHER_LIMIT]
+
 println("Create output folder ....")
 # create directory to store MPC results
 dirpath = createdir()
@@ -44,9 +48,9 @@ println("\tName: $(case.name)")
 println("\tNumber of control inputs: $(Int64((length(case.inputs) - 1) / 2))")
 println("\tNumber of measurements: $(length(case.measurements))")
 # println("\tList of control inputs:\t$(case.inputs)")
-# writedlm("inputList.csv", sort!(case.inputs), ", ")
+# writedlm("inputList-01.csv", sort!(case.inputs), ", ")
 # println("\tList of measurements:\t$(case.measurements)")
-# writedlm("measurementList.csv", sort!(case.measurements), ", ")
+# writedlm("measurementList-01.csv", sort!(case.measurements), ", ")
 
 println("\tDefault simulation step: $(case.step_def)")
 
@@ -55,7 +59,8 @@ global dfCurrentMeasurements = DataFrames.DataFrame()
 global dfAllInputs = DataFrames.DataFrame()
 # Run Case
 #----------
-start = Dates.now()
+start = Dates.now() # this time type includes date and time
+sim_start = Base.Libc.time() # epoch time in seconds
 # Reset test case
 println("Resetting test case if needed.") # Looks like it gets reset no matter what!!!!!!!
 res = HTTP.put("$JModelicaLocation/reset",["Content-Type" => "application/json"], JSON.json(Dict("start" => 0 + 200 * 86400)))
@@ -75,6 +80,13 @@ while minute <= end_minute - start_minute
 
     if minute == 1.0
         global u = ctrlInitialize(case.inputs)
+        # the following set points are added for data analysis later; their values are not relevant when going with default controller
+        for floor = 1 : p.numfloors
+            for zone = 1 : p.numzones
+                u["floor$(floor)_zon$(zone)_oveTSetDisAir_activate"] = 0
+                u["floor$(floor)_zon$(zone)_oveTSetDisAir_u"] = 1e-27
+            end
+        end
         global dfCurrentSetpoints = dict2df!(dfCurrentSetpoints, u)
         # println(u)
     end
@@ -204,22 +216,33 @@ while minute <= end_minute - start_minute
                     @printf("floor %d, zone %d -> reheat valve opening = %.4f, constrain: [%.2f, %2f]\n", f, z, JuMP.value(zoneflow[f, z, 1])/p.zoneflow_max[z], p.zoneflow_min[z]/p.zoneflow_max[z], p.zoneflow_max[z]/p.zoneflow_max[z])
                 end
             end
-            @printf("<<<<<<< RE-INITIALIZE THE MODEL WITH THE LAST VALUES OF THE PREVIOUS SOLVER. >>>>>>>\n")
-            JuMP.set_start_value.(JuMP.all_variables(m), JuMP.value.(JuMP.all_variables(m)))
-            if solverinfo["status"] == MOI.OPTIMAL || solverinfo["status"] == MOI.LOCALLY_SOLVED
+            if in(solverinfo["status"], status_goodSolution)
               # store current overrides
               global dfCurrentSetpoints = setoverrides!(dfCurrentSetpoints, control = "MPC")
+              @printf("<<<<<<< RE-INITIALIZE THE MODEL WITH THE LAST VALUES OF THE PREVIOUS SOLVER. >>>>>>>\n")
+              JuMP.set_start_value.(JuMP.all_variables(m), JuMP.value.(JuMP.all_variables(m)))
               o.maxiter = originalMaxIter
               @printf("New max iteration number: %d.\n", o.maxiter)
-            elseif solverinfo["status"] == MOI.ITERATION_LIMIT
-                @printf("<<<<< THIS TIME: MAXIMUM ITERATION NUMBER REACHED. >>>>>>>\n")
+            elseif solverinfo["status"] == status_userLim[1] # MOI.ITERATION_LIMIT
+              @printf("<<<<< THIS TIME: USER MAXIMUM ITERATION NUMBER REACHED. >>>>>>>\n")
+              @printf("<<<<<<< RE-INITIALIZE THE MODEL WITH THE LAST VALUES OF THE PREVIOUS SOLVER. >>>>>>>\n")
+              JuMP.set_start_value.(JuMP.all_variables(m), JuMP.value.(JuMP.all_variables(m)))
+              # store previously computed MPC overrides
+              global dfCurrentSetpoints = setoverrides!(dfCurrentSetpoints, dfPastSetpoints, minute_of_day, control = "MPC")
+              o.maxiter += 100
+              @printf("New max iteration number: %d.\n", o.maxiter)
+            elseif in(solverinfo["status"], status_badSolution)
+                @printf("Optimization algorithm terminated with INFEASIBLE or UNBOUNDED solution.\n")
+                @printf("<<<<<<< RE-INITIALIZE THE MODEL WITH THE LAST VALUES OF THE PREVIOUS SOLVER. >>>>>>>\n")
+                JuMP.set_start_value.(JuMP.all_variables(m), JuMP.value.(JuMP.all_variables(m)))
                 # store previously computed MPC overrides
                 global dfCurrentSetpoints = setoverrides!(dfCurrentSetpoints, dfPastSetpoints, minute_of_day, control = "MPC")
-                o.maxiter += 100
-                @printf("New max iteration number: %d.\n", o.maxiter)
-            else
-                @printf("<<<<<<<<< STILL NEED T TACKLE THESE CASES >>>>>>>>\n")
-                error("The model was not solved correctly.")
+            elseif in(solverinfo["status"], status_userLim[2:end])
+                @printf("<<<<<<< SOME OTHER SORT OF LIMIT HAS BEEN REACHED, that is %s. >>>>>>>>>>", string(solverinfo["status"]))
+                @printf("<<<<<<< RE-INITIALIZE THE MODEL WITH THE LAST VALUES OF THE PREVIOUS SOLVER. >>>>>>>\n")
+                JuMP.set_start_value.(JuMP.all_variables(m), JuMP.value.(JuMP.all_variables(m)))
+                # store previously computed MPC overrides
+                global dfCurrentSetpoints = setoverrides!(dfCurrentSetpoints, dfPastSetpoints, minute_of_day, control = "MPC")
             end
             mpcOptEndTime = Base.Libc.time()
             @printf("Minute %d MPC/OPTIMIZATION ended at %s, after %.4f seconds.\n", minute, Base.Libc.strftime(mpcOptEndTime), mpcOptEndTime - mpcOptStartTime)
@@ -254,7 +277,21 @@ while minute <= end_minute - start_minute
     saveresults(dfCurrentMeasurements, dfCurrentSetpoints, allinfo, dirpath)
     saveEndTime = Base.Libc.time()
     @printf("Minute %d saving ended at %s, after %.4f seconds.\n", minute - 1, Base.Libc.strftime(saveEndTime), saveEndTime - saveStartTime)
+    int_sim_end = Base.Libc.time()
+    int_sim_time = int_sim_end - sim_start # in seconds
+    int_sim_days = div(int_sim_time, 24 * 60 * 60)
+    int_sim_hours = div(int_sim_time - int_sim_days * 24 * 60 * 60, 60 * 60)
+    int_sim_min = div(int_sim_time - int_sim_days * 24 * 60 * 60 - int_sim_hours * 60 * 60, 60)
+    int_sim_sec = rem(int_sim_time - int_sim_days * 24 * 60 * 60 - int_sim_hours * 60 * 60 - int_sim_min * 60, 60)
+    @printf("So far, the simulation took %d days, %d hours, %d minutes and %.2f seconds.\n", int_sim_days, int_sim_hours, int_sim_min, int_sim_sec)
 end
+sim_end = Base.Libc.time()
+sim_time = sim_end - sim_start # in seconds
+sim_days = div(sim_time, 24 * 60 * 60)
+sim_hours = div(sim_time - sim_days * 24 * 60 * 60, 60 * 60)
+sim_min = div(sim_time - sim_days * 24 * 60 * 60 - sim_hours * 60 * 60, 60)
+sim_sec = rem(sim_time - sim_days * 24 * 60 * 60 - sim_hours * 60 * 60 - sim_min * 60, 60)
+@printf("The whole simulation took %d days, %d hours, %d minutes and %.2f seconds.\n", sim_days, sim_hours, sim_min, sim_sec)
 #
 #################### End of main loop ###########################################################
 #################################################################################################
