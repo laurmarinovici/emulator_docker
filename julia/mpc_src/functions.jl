@@ -610,6 +610,9 @@ function predictloads(history::DataFrames.DataFrame)
             loads = zeros(p.numfloors, p.numzones, o.numstages)  # initialize
             for (f, z) in zip(1:p.numfloors, 1:p.numzones)
                 sum_error = 0.0
+                alpha = p.zonetemp_alpha[f, z]
+                beta = p.zonetemp_beta[f, z]
+                gamma = p.zonetemp_gamma[f, z]
                 for row in 1:(size(history, 1) - 1)
 
                     # extract variables of interest
@@ -617,9 +620,7 @@ function predictloads(history::DataFrames.DataFrame)
                     flow = history[row, Symbol("floor$(f)_zon$(z)_mSupAir_y")] # ("zoneflow_f$(f)z$z")]
                     dischargetemp = history[row, Symbol("floor$(f)_zon$(z)_TSupAir_y")] # ("zonedischargetemp_f$(f)z$z")]
                     ambient = history[row, Symbol("TOutDryBul_y")] # ("outside_temp")]
-                    alpha = p.zonetemp_alpha[f, z]
-                    beta = p.zonetemp_beta[f, z]
-                    gamma = p.zonetemp_gamma[f, z]
+                    println(ambient)
 
                     # predicted temp (from model) for data in row+1 given data in row
                     pred =  alpha * temp +  beta * flow * (dischargetemp - temp) + gamma * ambient
@@ -723,12 +724,12 @@ function setoverrides!(target::DataFrames.DataFrame,
         end
 
         # special case: 5:59 am (maximize the flow)
-        if minute_of_day == 6 * 60.0 - 1.0
-            for f = 1:p.numfloors, z = 1:p.numzones
-                target[1, Symbol("floor$(f)_zon$(z)_oveAirFloRat_activate")] = 1
-                target[1, Symbol("floor$(f)_zon$(z)_oveAirFloRat_u")] = p.zoneflow_max[z]/p.zoneflow_max[z]
-            end
-        end
+        #if minute_of_day == 6 * 60.0 - 1.0
+        #    for f = 1:p.numfloors, z = 1:p.numzones
+        #        target[1, Symbol("floor$(f)_zon$(z)_oveAirFloRat_activate")] = 1
+        #        target[1, Symbol("floor$(f)_zon$(z)_oveAirFloRat_u")] = p.zoneflow_max[z]/p.zoneflow_max[z]
+        #    end
+        #end
     else
         nothing # display error message
     end
