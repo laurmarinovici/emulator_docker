@@ -574,7 +574,7 @@ function predictambient(current_temp::Float64, minute_of_day::Float64;
     elseif o.oatpredflag == 1 # use complete future information
         minute = round(Int, minute_of_day)   # starting row index (integer)
 
-        if minute + o.numstages <= 1440
+        if minute + o.numstages <= 1440 # 1440 = total number of minutes in a day
             temps = true_outsidetemp[minute:(minute + o.numstages), :temp] # dataframe
             temps = convert(Array, temps)  # convert to Array
         else
@@ -620,7 +620,6 @@ function predictloads(history::DataFrames.DataFrame)
                     flow = history[row, Symbol("floor$(f)_zon$(z)_mSupAir_y")] # ("zoneflow_f$(f)z$z")]
                     dischargetemp = history[row, Symbol("floor$(f)_zon$(z)_TSupAir_y")] # ("zonedischargetemp_f$(f)z$z")]
                     ambient = history[row, Symbol("TOutDryBul_y")] # ("outside_temp")]
-                    println(ambient)
 
                     # predicted temp (from model) for data in row+1 given data in row
                     pred =  alpha * temp +  beta * flow * (dischargetemp - temp) + gamma * ambient
