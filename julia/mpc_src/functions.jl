@@ -639,21 +639,21 @@ Set appropriate setpoints from the MPC model.
 """
 function setoverrides!(df::DataFrames.DataFrame;
                         control = "MPC",
-                        currStage::Int64 = 1,
+                        stage::Int64 = 1,
                         default::Float64 = 1e-27,
                         unit::String = "Kelvin")
     if control == "MPC"
         for f = 1:p.numfloors
                 # damper setpoint
                 df[Symbol("floor$(f)_aHU_con_oveMinOAFra_activate")] = 1
-                df[Symbol("floor$(f)_aHU_con_oveMinOAFra_u")] = JuMP.value(ahudamper[f, currStage])
+                df[Symbol("floor$(f)_aHU_con_oveMinOAFra_u")] = JuMP.value(ahudamper[f, stage])
 
                 # ahu supply temperatures
                 df[Symbol("floor$(f)_aHU_con_oveTSetSupAir_activate")] = 1
                 if unit == "Kelvin"
-                    df[Symbol("floor$(f)_aHU_con_oveTSetSupAir_u")] = JuMP.value(ahusupplytemp[f, currStage]) + 273.15
+                    df[Symbol("floor$(f)_aHU_con_oveTSetSupAir_u")] = JuMP.value(ahusupplytemp[f, stage]) + 273.15
                 else
-                    df[Symbol("floor$(f)_aHU_con_oveTSetSupAir_u")] = JuMP.value(ahusupplytemp[f, currStage])
+                    df[Symbol("floor$(f)_aHU_con_oveTSetSupAir_u")] = JuMP.value(ahusupplytemp[f, stage])
                 end
 
                 # static pressure setpoint
@@ -664,15 +664,15 @@ function setoverrides!(df::DataFrames.DataFrame;
                 for z = 1:p.numzones
                     # zone flows
                     df[Symbol("floor$(f)_zon$(z)_oveAirFloRat_activate")] = 1
-                    df[Symbol("floor$(f)_zon$(z)_oveAirFloRat_u")] = JuMP.value(zoneflow[f, z, currStage])/p.zoneflow_max[z]
+                    df[Symbol("floor$(f)_zon$(z)_oveAirFloRat_u")] = JuMP.value(zoneflow[f, z, stage])/p.zoneflow_max[z]
 
                     df[Symbol("floor$(f)_zon$(z)_oveHeaOut_activate")] = 1
-                    df[Symbol("floor$(f)_zon$(z)_oveHeaOut_u")] = (JuMP.value(zonedischargetemp[f, z, currStage]) - JuMP.value(ahusupplytemp[f, currStage])) / (p.zonedischargetemp_max - JuMP.value(ahusupplytemp[f, currStage]))
+                    df[Symbol("floor$(f)_zon$(z)_oveHeaOut_u")] = (JuMP.value(zonedischargetemp[f, z, stage]) - JuMP.value(ahusupplytemp[f, stage])) / (p.zonedischargetemp_max - JuMP.value(ahusupplytemp[f, stage]))
 
                     # discharge temperatures - this is just for data saving purpose
                     # and it comes in Celsius from the MPC algorithm
                     df[Symbol("floor$(f)_zon$(z)_oveTSetDisAir_activate")] = 1
-                    df[Symbol("floor$(f)_zon$(z)_oveTSetDisAir_u")] = JuMP.value(zonedischargetemp[f, z, currStage])
+                    df[Symbol("floor$(f)_zon$(z)_oveTSetDisAir_u")] = JuMP.value(zonedischargetemp[f, z, stage])
                 end
         end
     elseif control == "DEFAULT"

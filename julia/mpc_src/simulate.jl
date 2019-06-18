@@ -176,7 +176,7 @@ while minute <= end_minute - start_minute
               # store current overrides
               currMPCStage = allinfo["MPC stage"] + 1
               @printf("Using stage %d of the MPC prediction horizon.\n", currMPCStage)
-              global dfCurrentSetpoints = setoverrides!(dfCurrentSetpoints, control = "MPC", currMPCStage)
+              global dfCurrentSetpoints = setoverrides!(dfCurrentSetpoints, control = "MPC", stage = currMPCStage)
             else
               currMPCStage = "n/a"
               # store previously computed MPC overrides
@@ -232,7 +232,7 @@ while minute <= end_minute - start_minute
               # store current overrides
               currMPCStage = 1
               @printf("Using stage %d of the MPC prediction horizon.\n", currMPCStage)
-              global dfCurrentSetpoints = setoverrides!(dfCurrentSetpoints, control = "MPC", currMPCStage)
+              global dfCurrentSetpoints = setoverrides!(dfCurrentSetpoints, control = "MPC", stage = currMPCStage)
               @printf("<<<<<<< RE-INITIALIZE THE MODEL WITH THE LAST VALUES OF THE PREVIOUS SOLVER. >>>>>>>\n")
               JuMP.set_start_value.(JuMP.all_variables(m), JuMP.value.(JuMP.all_variables(m)))
               o.maxiter = originalMaxIter
