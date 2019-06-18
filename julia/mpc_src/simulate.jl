@@ -153,7 +153,7 @@ while minute <= end_minute - start_minute
         solverinfo = Dict("optcost" => 1e-27, "status" => "N/A", "soltime" => 1e-27)
 
         # all important info
-        allinfo = Dict("solverinfo" => solverinfo, "timedata" => timedata,
+        global allinfo = Dict("solverinfo" => solverinfo, "timedata" => timedata,
         "mpcparams" => mpc_params, "sample" => sample, "controller" => "DEFAULT")
         defaultNoOveEndTime = Base.Libc.time()
         @printf("Minute %d DEFAULT/NO OVERRIDE ended at %s, after %.4f seconds.\n", minute, Base.Libc.strftime(defaultNoOveEndTime), defaultNoOveEndTime - defaultNoOveStartTime)
@@ -189,7 +189,7 @@ while minute <= end_minute - start_minute
             solverinfo = Dict("optcost" => 1e-27, 
                               "status" => "no-solve",
                               "soltime" => 1e-27)
-            allinfo["MPC stage"] = currentMPCStage
+            global allinfo["MPC stage"] = currentMPCStage
             mpcNoOptEndTime = Base.Libc.time()
             @printf("Minute %d MPC/NO OPTIMIZATION ended at %s, after %.4f seconds.\n", minute, Base.Libc.strftime(mpcNoOptEndTime), mpcNoOptEndTime - mpcNoOptStartTime)
 
@@ -266,7 +266,7 @@ while minute <= end_minute - start_minute
         end
 
         # all mpc info
-        allinfo = Dict("solverinfo" => solverinfo,
+        global allinfo = Dict("solverinfo" => solverinfo,
                        "timedata" => timedata,
                        "mpcparams" => mpc_params,
                        "sample" => sample,
@@ -288,7 +288,7 @@ while minute <= end_minute - start_minute
     
     loopEndTime = Base.Libc.time()
     @printf("Minute %d loop ended at %s, after %.4f seconds.\n", minute - 1, Base.Libc.strftime(loopEndTime), loopEndTime - loopStartTime)
-    allinfo["loopTime"] = loopEndTime - loopStartTime
+    global allinfo["loopTime"] = loopEndTime - loopStartTime
     
     # save results for current sampling period
     saveStartTime = Base.Libc.time()
