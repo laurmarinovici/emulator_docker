@@ -172,12 +172,24 @@ while minute <= end_minute - start_minute
             # message
             printmessage(sample, sampling_timer, data_type = "overrides", control = "MPC")
 
+            if in(solverinfo["status"], status_goodSolution)
+              # store current overrides
+              global currMPCStage = allinfo["MPC stage"] + 1
+              @printf("Using stage %d of the MPC prediction horizon.\n", currentMPCStage)
+              global dfCurrentSetpoints = setoverrides!(dfCurrentSetpoints, control = "MPC", currMPCStage)
+            else
+              global currMPCStage = "n/a"
+              # store previously computed MPC overrides
+              global dfCurrentSetpoints = setoverrides!(dfCurrentSetpoints, dfPastSetpoints, minute_of_day, control = "MPC")
+            end
             # store previously computed MPC overrides
-            global dfCurrentSetpoints = setoverrides!(dfCurrentSetpoints, dfPastSetpoints, minute_of_day, control = "MPC")
+            # global dfCurrentSetpoints = setoverrides!(dfCurrentSetpoints, dfPastSetpoints, minute_of_day, control = "MPC")
 
             # solution info
-            solverinfo = Dict("optcost" => 1e-27, "status" => "no-solve",
-            "soltime" => 1e-27)
+            solverinfo = Dict("optcost" => 1e-27, 
+                              "status" => "no-solve",
+                              "soltime" => 1e-27)
+            allinfo["MPC stage"] = currentMPCStage
             mpcNoOptEndTime = Base.Libc.time()
             @printf("Minute %d MPC/NO OPTIMIZATION ended at %s, after %.4f seconds.\n", minute, Base.Libc.strftime(mpcNoOptEndTime), mpcNoOptEndTime - mpcNoOptStartTime)
 
@@ -195,7 +207,7 @@ while minute <= end_minute - start_minute
             updatemodelparams(dfCurrentMeasurements, mpc_params)
 
             # solve MPC model
-            solverinfo = solvemodel()
+            global solverinfo = solvemodel()
             @printf("================= Quick statistics of optimization algorithms. =============\n")
             @printf("Going for %d max iterations.\n", o.maxiter)
             # println(JuMP.SimplexIterations(m))
@@ -218,12 +230,15 @@ while minute <= end_minute - start_minute
             end
             if in(solverinfo["status"], status_goodSolution)
               # store current overrides
-              global dfCurrentSetpoints = setoverrides!(dfCurrentSetpoints, control = "MPC")
+              global currMPCStage = 1
+              @printf("Using stage %d of the MPC prediction horizon.\n", currentMPCStage)
+              global dfCurrentSetpoints = setoverrides!(dfCurrentSetpoints, control = "MPC", currMPCStage)
               @printf("<<<<<<< RE-INITIALIZE THE MODEL WITH THE LAST VALUES OF THE PREVIOUS SOLVER. >>>>>>>\n")
               JuMP.set_start_value.(JuMP.all_variables(m), JuMP.value.(JuMP.all_variables(m)))
               o.maxiter = originalMaxIter
               @printf("New max iteration number: %d.\n", o.maxiter)
             elseif solverinfo["status"] == status_userLim[1] # MOI.ITERATION_LIMIT
+              global currMPCStage = "n/a"
               @printf("<<<<< THIS TIME: USER MAXIMUM ITERATION NUMBER REACHED. >>>>>>>\n")
               @printf("<<<<<<< RE-INITIALIZE THE MODEL WITH THE LAST VALUES OF THE PREVIOUS SOLVER. >>>>>>>\n")
               JuMP.set_start_value.(JuMP.all_variables(m), JuMP.value.(JuMP.all_variables(m)))
@@ -232,17 +247,19 @@ while minute <= end_minute - start_minute
               o.maxiter += 100
               @printf("New max iteration number: %d.\n", o.maxiter)
             elseif in(solverinfo["status"], status_badSolution)
-                @printf("Optimization algorithm terminated with INFEASIBLE or UNBOUNDED solution.\n")
-                @printf("<<<<<<< RE-INITIALIZE THE MODEL WITH THE LAST VALUES OF THE PREVIOUS SOLVER. >>>>>>>\n")
-                JuMP.set_start_value.(JuMP.all_variables(m), JuMP.value.(JuMP.all_variables(m)))
-                # store previously computed MPC overrides
-                global dfCurrentSetpoints = setoverrides!(dfCurrentSetpoints, dfPastSetpoints, minute_of_day, control = "MPC")
+              global currMPCStage = "n/a"
+              @printf("Optimization algorithm terminated with INFEASIBLE or UNBOUNDED solution.\n")
+              @printf("<<<<<<< RE-INITIALIZE THE MODEL WITH THE LAST VALUES OF THE PREVIOUS SOLVER. >>>>>>>\n")
+              JuMP.set_start_value.(JuMP.all_variables(m), JuMP.value.(JuMP.all_variables(m)))
+              # store previously computed MPC overrides
+              global dfCurrentSetpoints = setoverrides!(dfCurrentSetpoints, dfPastSetpoints, minute_of_day, control = "MPC")
             elseif in(solverinfo["status"], status_userLim[2:end])
-                @printf("<<<<<<< SOME OTHER SORT OF LIMIT HAS BEEN REACHED, that is %s. >>>>>>>>>>", string(solverinfo["status"]))
-                @printf("<<<<<<< RE-INITIALIZE THE MODEL WITH THE LAST VALUES OF THE PREVIOUS SOLVER. >>>>>>>\n")
-                JuMP.set_start_value.(JuMP.all_variables(m), JuMP.value.(JuMP.all_variables(m)))
-                # store previously computed MPC overrides
-                global dfCurrentSetpoints = setoverrides!(dfCurrentSetpoints, dfPastSetpoints, minute_of_day, control = "MPC")
+              global currMPCStage = "n/a"
+              @printf("<<<<<<< SOME OTHER SORT OF LIMIT HAS BEEN REACHED, that is %s. >>>>>>>>>>", string(solverinfo["status"]))
+              @printf("<<<<<<< RE-INITIALIZE THE MODEL WITH THE LAST VALUES OF THE PREVIOUS SOLVER. >>>>>>>\n")
+              JuMP.set_start_value.(JuMP.all_variables(m), JuMP.value.(JuMP.all_variables(m)))
+              # store previously computed MPC overrides
+              global dfCurrentSetpoints = setoverrides!(dfCurrentSetpoints, dfPastSetpoints, minute_of_day, control = "MPC")
             end
             mpcOptEndTime = Base.Libc.time()
             @printf("Minute %d MPC/OPTIMIZATION ended at %s, after %.4f seconds.\n", minute, Base.Libc.strftime(mpcOptEndTime), mpcOptEndTime - mpcOptStartTime)
@@ -250,10 +267,11 @@ while minute <= end_minute - start_minute
 
         # all mpc info
         allinfo = Dict("solverinfo" => solverinfo,
-                    "timedata" => timedata,
-                    "mpcparams" => mpc_params,
-                    "sample" => sample,
-                    "controller" => "MPC")
+                       "timedata" => timedata,
+                       "mpcparams" => mpc_params,
+                       "sample" => sample,
+                       "controller" => "MPC",
+                       "MPC stage" => currMPCStage)
 
         # send back data (with overrides)
         u = df2dict!(u, dfCurrentSetpoints) # u
