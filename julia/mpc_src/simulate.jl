@@ -175,7 +175,7 @@ while minute <= end_minute - start_minute
             if in(solverinfo["status"], status_goodSolution)
               # store current overrides
               global currMPCStage = allinfo["MPC stage"] + 1
-              @printf("Using stage %d of the MPC prediction horizon.\n", currentMPCStage)
+              @printf("Using stage %d of the MPC prediction horizon.\n", currMPCStage)
               global dfCurrentSetpoints = setoverrides!(dfCurrentSetpoints, control = "MPC", currMPCStage)
             else
               global currMPCStage = "n/a"
