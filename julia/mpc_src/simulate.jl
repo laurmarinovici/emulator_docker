@@ -168,17 +168,17 @@ while minute <= end_minute - start_minute
         ####################################################################
         if (1 <= sampling_timer <= o.cl_nosolvewindow)
             mpcNoOptStartTime = Base.Libc.time()
-            println("<<<<< THIS TIME: USE LAST COMPUTED SETPOINTS. >>>>>>>")
             # message
             printmessage(sample, sampling_timer, data_type = "overrides", control = "MPC")
 
-            if in(solverinfo["status"], status_goodSolution)
+            if in(currMPCStatus, status_goodSolution)
               # store current overrides
               currMPCStage = allinfo["MPC stage"] + 1
-              @printf("Using stage %d of the MPC prediction horizon.\n", currMPCStage)
+              @printf("<<<<< Using stage %d of the MPC prediction horizon. >>>>>\n", currMPCStage)
               global dfCurrentSetpoints = setoverrides!(dfCurrentSetpoints, control = "MPC", stage = currMPCStage)
             else
               currMPCStage = "n/a"
+              @printf("<<<<< MPC failed this time, so going with last computed setpoints. >>>>>>>\n")
               # store previously computed MPC overrides
               global dfCurrentSetpoints = setoverrides!(dfCurrentSetpoints, dfPastSetpoints, minute_of_day, control = "MPC")
             end
@@ -199,7 +199,7 @@ while minute <= end_minute - start_minute
         ####################################################################
         else
             mpcOptStartTime = Base.Libc.time()
-            println("<<<<< THIS TIME: SOLVE MPC AND USE NEWLY COMPUTED SETPOINTS. >>>>>>>")
+            @printf("<<<<< Solve MPC to get new setpoints. >>>>>>>\n")
             # display message
             printmessage(sample, sampling_timer, data_type = "overrides", control = "MPC", optimize = "Yes")
 
@@ -228,6 +228,7 @@ while minute <= end_minute - start_minute
                     @printf("floor %d, zone %d -> reheat valve opening = %.4f, constrain: [%.2f, %2f]\n", f, z, JuMP.value(zoneflow[f, z, 1])/p.zoneflow_max[z], p.zoneflow_min[z]/p.zoneflow_max[z], p.zoneflow_max[z]/p.zoneflow_max[z])
                 end
             end
+            global currMPCStatus = solverinfo["status"]
             if in(solverinfo["status"], status_goodSolution)
               # store current overrides
               currMPCStage = 1
