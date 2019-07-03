@@ -22,6 +22,10 @@ function parse_float(conf::ConfParser.ConfParse, section::AbstractString, variab
     return parse(Float64, x)
 end
 
+function parse_bool(conf::ConfParser.ConfParse, section::AbstractString, variable::AbstractString)
+    x = ConfParser.retrieve(conf, section, variable)
+    return parse(Bool, x)
+end
 
 # define user-defined data types to store model parameters
 """
@@ -177,6 +181,7 @@ mutable struct OptimizationParams
     cl_MAwindow::Int
     cl_rate_supplytemp::Float64
     cl_minPerSample::Float64
+    mpcMovingBlockImpl::Bool
 
     # inner constructor
     function OptimizationParams()
@@ -218,6 +223,7 @@ mutable struct OptimizationParams
         obj.cl_MAwindow = parse_int(conf, "cl_params", "MAwindow")
         obj.cl_rate_supplytemp = parse_float(conf, "cl_params", "rate_supplytemp")
         obj.cl_minPerSample = parse_float(conf, "cl_params", "minPerSample")
+        obj.mpcMovingBlockImpl = parse_bool(conf, "cl_params", "mpcMovingBlockImpl")
 
         return obj
     end

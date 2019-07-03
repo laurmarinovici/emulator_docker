@@ -154,7 +154,7 @@ while minute <= end_minute - start_minute
 
         # all important info
         global allinfo = Dict("solverinfo" => solverinfo, "timedata" => timedata,
-        "mpcparams" => mpc_params, "sample" => sample, "controller" => "DEFAULT", "MPC stage" => 0)
+        "mpcparams" => mpc_params, "sample" => sample, "controller" => "DEFAULT", "MPC stage" => "n/a")
         defaultNoOveEndTime = Base.Libc.time()
         @printf("Minute %d DEFAULT/NO OVERRIDE ended at %s, after %.4f seconds.\n", minute, Base.Libc.strftime(defaultNoOveEndTime), defaultNoOveEndTime - defaultNoOveStartTime)
 
@@ -173,9 +173,15 @@ while minute <= end_minute - start_minute
 
             if in(currMPCStatus, status_goodSolution)
               # store current overrides
-              global currMPCStage = allinfo["MPC stage"] + 1
-              @printf("<<<<< Using stage %d of the MPC prediction horizon. >>>>>\n", currMPCStage)
-              global dfCurrentSetpoints = setoverrides!(dfCurrentSetpoints, control = "MPC", stage = currMPCStage)
+              if o.mpcMovingBlockImpl
+                global currMPCStage = allinfo["MPC stage"] + 1
+                @printf("<<<<< MPC MOVING BLOCK Implementation - Using stage %d of the MPC prediction horizon. >>>>>\n", currMPCStage)
+                global dfCurrentSetpoints = setoverrides!(dfCurrentSetpoints, control = "MPC", stage = currMPCStage)
+              else
+                global currMPCStage = 1
+                @printf("<<<<< MPC NON-MOVING BLOCK Implementation - Using stage %d of the MPC prediction horizon. >>>>>\n", currMPCStage)
+                global dfCurrentSetpoints = setoverrides!(dfCurrentSetpoints, control = "MPC", stage = currMPCStage)
+              end
             else
               global currMPCStage = "n/a"
               @printf("<<<<< MPC failed this time, so going with last computed setpoints. >>>>>>>\n")
