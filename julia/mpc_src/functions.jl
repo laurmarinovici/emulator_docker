@@ -49,6 +49,7 @@ mutable struct Params
     zonetemp_gamma::Array{Float64, 2}      # of size (numfloors, numzones)
     ahusupplytemp_min::Float64
     ahusupplytemp_max::Float64
+    ahusupplytemp_max_dev::Float64
     ahuflow_min::Vector{Float64}           # of length numfloors
     ahuflow_max::Vector{Float64}           # of length numfloors
     fan_params::Vector{Float64}            # of length 4
