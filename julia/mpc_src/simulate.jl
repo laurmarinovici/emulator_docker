@@ -154,7 +154,7 @@ while minute <= end_minute - start_minute
 
         # all important info
         global allinfo = Dict("solverinfo" => solverinfo, "timedata" => timedata,
-        "mpcparams" => mpc_params, "sample" => sample, "controller" => "DEFAULT")
+        "mpcparams" => mpc_params, "sample" => sample, "controller" => "DEFAULT", "MPC stage" => 0)
         defaultNoOveEndTime = Base.Libc.time()
         @printf("Minute %d DEFAULT/NO OVERRIDE ended at %s, after %.4f seconds.\n", minute, Base.Libc.strftime(defaultNoOveEndTime), defaultNoOveEndTime - defaultNoOveStartTime)
 

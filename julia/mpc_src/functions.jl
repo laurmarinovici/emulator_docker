@@ -918,6 +918,7 @@ function saveresults(dfMeasurements::DataFrames.DataFrame,
     soltime = dict["solverinfo"]["soltime"]
     load = dict["mpcparams"]["pred_loads"]
     looptime = dict["loopTime"]
+    currMPCstage = dict["MPC stage"]
 
     # Save data
     d = DataFrames.DataFrame()          # dataframe to be saved in csv file
@@ -929,6 +930,7 @@ function saveresults(dfMeasurements::DataFrames.DataFrame,
     d[:status] = status                 # status of solver
     d[:controller] = controller         # controller type
     d[:MPCstages] = o.numstages         # number of stages for MPC model
+    d[:currMPCstage] = currMPCstage     # current MPC prediction stage used to advance between MPC optimization periods
     d[:soltime] = soltime               # solution time for MPC if applicable
     d[:looptime] = looptime             # time to execute one single sample loop
     d[:penaltyparam] = o.penalty        # penalty parameter
