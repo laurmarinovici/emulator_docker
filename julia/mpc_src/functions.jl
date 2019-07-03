@@ -386,7 +386,7 @@ end
 
 # constraining the change between 2 consecutive AHU supply temperature set points to avoid big jumps as consequences of
 # calculating for comfort or energy savings
-@NLconstraint(m, ahusupplytemp[f = 1:p.numfloors, h = 1:o.numwindows-1],
+@NLconstraint(m, [f = 1:p.numfloors, h = 1:o.numwindows-1],
             ahusupplytemp[f, h + 1] - ahusupplytemp[f, h] <= p.ahusupplytemp_max_dev)
 
 ## Objective cost function
