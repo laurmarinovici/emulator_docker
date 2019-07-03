@@ -119,6 +119,7 @@ mutable struct Params
         section = "ahu_params"
         obj.ahusupplytemp_min = parse_float(conf, section, "ahusupplytemp_min")
         obj.ahusupplytemp_max = parse_float(conf, section, "ahusupplytemp_max")
+        obj.ahusupplytemp_max_dev = parse_float(conf, section, "ahusupplytemp_max_dev")
         obj.ahuflow_min = ones(obj.numfloors)
         obj.ahuflow_max = ones(obj.numfloors)
         for f in 1:obj.numfloors
@@ -381,6 +382,11 @@ end
     #@NLconstraint(m, deltasupplytemp_upper_cons[f = 1:p.numfloors],
     #                ahusupplytemp[f, 1] - true_ahusupplytemp[f] <= 1.0 * o.cl_rate_supplytemp)
 #end
+
+# constraining the change between 2 consecutive AHU supply temperature set points to avoid big jumps as consequences of
+# calculating for comfort or energy savings
+@NLconstraint(m, ahusupplytemp[f = 1:p.numfloors, h = 1:o.numwindows-1],
+            ahusupplytemp[f, h + 1] - ahusupplytemp[f, h] <= p.ahusupplytemp_max_dev)
 
 ## Objective cost function
 # expression for sum of mass flows at each stage
