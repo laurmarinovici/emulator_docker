@@ -48,9 +48,9 @@ println("\tName: $(case.name)")
 println("\tNumber of control inputs: $(Int64((length(case.inputs) - 1) / 2))")
 println("\tNumber of measurements: $(length(case.measurements))")
 # println("\tList of control inputs:\t$(case.inputs)")
-# writedlm("inputList-01.csv", sort!(case.inputs), ", ")
+writedlm("inputList-20190705.csv", sort!(case.inputs), ", ")
 # println("\tList of measurements:\t$(case.measurements)")
-# writedlm("measurementList-01.csv", sort!(case.measurements), ", ")
+writedlm("measurementList-20190705.csv", sort!(case.measurements), ", ")
 
 println("\tDefault simulation step: $(case.step_def)")
 
