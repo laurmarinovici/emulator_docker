@@ -117,10 +117,10 @@ Inside the `JModelica Docker container`_, the emulator is simulated using a `RES
 
 .. _REST: https://restfulapi.net
 
-.. figure:: images/emulatorDockerDiagram.png
-   :scale: 50 %
-   .. _JModelica Docker container:
-   Figure 1. Emulator Docker diagram
+.. _JModelica Docker container:
+  .. figure:: images/emulatorDockerDiagram.png
+    :scale: 50 %
+    Figure 1. Emulator Docker diagram
 
 Running emulator simulation - Example
 =====================================
