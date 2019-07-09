@@ -6,7 +6,7 @@ The building emulator is given as a Functional Mock-up Unit (FMU) and simulated 
 
 Docker Container
 ================
-For Windows 10 and Mac OS, there are specific versions of `Docker desktop`_, that is `Docker desktop for Windows`_, and `Docker desktop for Mac`_. On Ubuntu (Linux), installing Docker is less straight, and the procedure coudl follow the details below.
+For Windows 10 and Mac OS, there are specific versions of `Docker desktop`_, that is `Docker desktop for Windows`_, and `Docker desktop for Mac`_. On Ubuntu (Linux), installing Docker is less straight forward, and the procedure coudl follow the details below.
 
 .. _`Docker desktop`: https://www.docker.com/products/docker-desktop
 .. _`Docker desktop for Windows`: https://hub.docker.com/editions/community/docker-ce-desktop-windows
@@ -108,8 +108,11 @@ Inside the JModelica Docker container
 -------------------------------------
 
 Inside the JModelica Docker container, the emulator is simulated using a `REST`_ (REpresentational State Transfer) API to
+
 - configure the test case, that is specify the emulator to be simulated and set the simulation time step in seconds (config.py)
+
 - implement a test case Python class that defines the API used by the REST requests to perform functions such as advancing the simulation, retreiving test case information, and calculating and reporting results (testcase.py)
+
 - instantiate the emulator and define the REST API to interact with it (restapi.py)
 
 .. _REST: https://restfulapi.net
@@ -117,6 +120,9 @@ Inside the JModelica Docker container, the emulator is simulated using a `REST`_
 .. figure:: images/emulatorDockerDiagram.png
    :scale: 50 %
 
+Running emulator simulation - Example
+=====================================
 
+The following 
 
 
