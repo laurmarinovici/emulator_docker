@@ -120,6 +120,7 @@ Inside the `JModelica Docker container`_, the emulator is simulated using a `RES
 .. _JModelica Docker container:
   .. figure:: images/emulatorDockerDiagram.png
     :scale: 50 %
+    
     Figure 1. Emulator Docker diagram
 
 Running emulator simulation - Example
