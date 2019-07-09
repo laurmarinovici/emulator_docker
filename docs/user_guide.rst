@@ -107,7 +107,7 @@ The docker image will be downloaded on the host computer.
 Inside the JModelica Docker container
 -------------------------------------
 
-Inside the JModelica Docker container, the emulator is simulated using a `REST`_ (REpresentational State Transfer) API to
+Inside the `JModelica Docker container`_, the emulator is simulated using a `REST`_ (REpresentational State Transfer) API to
 
 - configure the test case, that is specify the emulator to be simulated and set the simulation time step in seconds (config.py)
 
@@ -119,10 +119,12 @@ Inside the JModelica Docker container, the emulator is simulated using a `REST`_
 
 .. figure:: images/emulatorDockerDiagram.png
    :scale: 50 %
+   .. _JModelica Docker container:
+   Figure 1. Emulator Docker diagram
 
 Running emulator simulation - Example
 =====================================
 
-The following 
+1. Open the Ubuntu terminal on a distribution that includes Docker.
 
 
