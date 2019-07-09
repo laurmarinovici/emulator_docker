@@ -107,4 +107,7 @@ The docker image will be downloaded on the host computer.
 Inside the JModelica Docker container
 -------------------------------------
 
+.. figure:: images/emulatorDockerDiagram.png
+   :scale: 50 %
+
 
