@@ -140,6 +140,7 @@ Running emulator simulation - Example
   docker images
 
 should return something similar to
+
 +-------------------+----------+------------------+----------------+--------------+
 | REPOSITORY        | TAG      | IMAGE ID         | CREATED        | SIZE         |
 +===================+==========+==================+================+==============+
@@ -155,5 +156,7 @@ should return something similar to
            --network=host --name=jmodelica boptest_testcase3 bash
 
 which will create a Docker container named *jmodelica* from *boptest_testcase3* image, and bind 2 host computer folders to 2 container folders, specifically, the master branch of the emulator GitHub repository to */mnt/master*  and a forked version to */mnt/fork/*. This way we have access to any file in the local host folders, including the emulator FMU, and any development done on any file of the binded local folders would automatically be available in the container.
+
+
 
 
