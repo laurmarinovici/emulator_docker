@@ -113,7 +113,10 @@ Inside the `JModelica Docker container`_, the emulator is simulated using a `RES
 
 - implement a test case Python class that defines the API used by the REST requests to perform functions such as advancing the simulation, retreiving test case information, and calculating and reporting results (testcase.py)
 
-- instantiate the emulator and define the REST API to interact with it (restapi.py)
+.. automodule:: ../testcase
+  :members:
+
+- instantiate the emulator and define the REST API to interact with it through different requests (restapi.py)
 
 .. _REST: https://restfulapi.net
 
@@ -168,5 +171,7 @@ points to the correct location and name of the emulator FMU.
 .. code::
 
   python restapi.py
+
+which will now wait for requests to access the emulator.
 
 
