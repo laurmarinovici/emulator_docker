@@ -107,25 +107,25 @@ The docker image will be downloaded on the host computer.
 Inside the JModelica Docker container
 -------------------------------------
 
-Inside the `JModelica Docker container`_, the emulator is simulated using a `REST`_ (REpresentational State Transfer) API to
-
-- configure the test case, that is specify the emulator to be simulated and set the simulation time step in seconds (config.py)
-
-- implement a test case Python class that defines the API used by the REST requests to perform functions such as advancing the simulation, retreiving test case information, and calculating and reporting results (testcase.py)
-
-.. automodule:: testcase
-  :members:
-
-- instantiate the emulator and define the REST API to interact with it through different requests (restapi.py)
-
-.. _REST: https://restfulapi.net
-
 .. _JModelica Docker container:
 
   .. figure:: images/emulatorDockerDiagram.png
     :scale: 50 %
 
     Figure 1. Emulator Docker diagram
+
+Inside the `JModelica Docker container`_, the emulator is simulated using a `REST`_ (REpresentational State Transfer) API to
+.. _REST: https://restfulapi.net
+
+- configure the test case, that is specify the emulator to be simulated and set the simulation time step in seconds (config.py)
+
+- implement a test case Python class that defines the API used by the REST requests to perform functions such as advancing the simulation, retrieving test case information, and calculating and reporting results (testcase.py)
+
+  Code documentation
+
+.. automodule:: testcase
+
+- instantiate the emulator and define the REST API to interact with it through different requests (restapi.py)
 
 Running emulator simulation - Example
 =====================================

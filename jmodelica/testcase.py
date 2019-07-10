@@ -3,9 +3,7 @@
 
   :platform: Unix, Windows
 
-  :synopsis: This module defines the API to the test case used by the REST requests to 
-perform functions such as advancing the simulation, retreiving test case 
-information, and calculating and reporting results.
+  :synopsis: This module defines the API to the test case used by the REST requests to perform functions such as advancing the simulation, retreiving test case information, and calculating and reporting results.
 
 .. moduleauthor:: Sen Huang
 """
