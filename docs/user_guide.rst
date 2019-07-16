@@ -115,6 +115,7 @@ Inside the JModelica Docker container
     Figure 1. Emulator Docker diagram
 
 Inside the `JModelica Docker container`_, the emulator is simulated using a `REST`_ (REpresentational State Transfer) API to
+
 .. _REST: https://restfulapi.net
 
 - configure the test case, that is specify the emulator to be simulated and set the simulation time step in seconds (config.py)
@@ -122,9 +123,6 @@ Inside the `JModelica Docker container`_, the emulator is simulated using a `RES
 - implement a test case Python class that defines the API used by the REST requests to perform functions such as advancing the simulation, retrieving test case information, and calculating and reporting results (testcase.py)
 
   Code documentation
-
-.. automodule:: testcase
-  :members: TestCase
 
 .. autoclass:: TestCase
     :members: advance
