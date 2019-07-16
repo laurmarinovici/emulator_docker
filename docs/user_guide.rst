@@ -122,9 +122,25 @@ Inside the `JModelica Docker container`_, the emulator is simulated using a `RES
 
 - implement a test case Python class that defines the API used by the REST requests to perform functions such as advancing the simulation, retrieving test case information, and calculating and reporting results (testcase.py)
 
-  Code documentation
+**Code documentation**
 
 .. automodule:: testcase
+
+- Acquire the list of inputs the emulator accepts as control signals with
+
+.. autoclass:: TestCase
+  :members: get_inputs
+
+  The emulator inputs are pairs of 2 values for each control signal:
+  - *<name>_activate* - that can take 0 or 1 values indicating that particular input is going to be used for control with the given value rather than the default value
+  - *<name>_u* - that represents the actual input value that the control designer calculates
+
+- Acquire the list of measurements exposed by the emulator with
+
+.. autoclass:: TestCase
+  :members: get_measurements
+
+- Advance the emulator simulation one step further after providing a set of control inputs to it with
 
 .. autoclass:: TestCase
   :members: advance
