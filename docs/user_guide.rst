@@ -145,6 +145,31 @@ Inside the `JModelica Docker container`_, the emulator is simulated using a `RES
 .. autoclass:: TestCase
   :members: advance
 
+- Obtain the name of the emulator
+
+.. autoclass:: TestCase
+  :members: get_name
+
+- Obtain the simlation time step in seconds
+
+.. autoclass:: TestCase
+  :members: get_step
+
+- Set the simulation time step in seconds
+
+.. autoclass:: TestCase
+  :members: set_step
+
+- Obtain full trajectories of measurements and control inputs
+
+.. autoclass:: TestCase
+  :members: get_results
+
+- Obtain key performance indicator (kpi)
+
+.. autoclass:: TestCase
+  :members: get_kpis
+
 - instantiate the emulator and define the REST API to interact with it through different requests (restapi.py)
 
 Running emulator simulation - Example
