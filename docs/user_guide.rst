@@ -126,7 +126,7 @@ Inside the `JModelica Docker container`_, the emulator is simulated using a `RES
 
 .. automodule:: testcase
 
-- Acquire the list of inputs the emulator accepts as control signals with
+- Acquire the list of inputs the emulator accepts as control signals
 
 .. autoclass:: TestCase
   :members: get_inputs
@@ -135,7 +135,7 @@ Inside the `JModelica Docker container`_, the emulator is simulated using a `RES
   - *<name>_activate* - that can take 0 or 1 values indicating that particular input is going to be used for control with the given value rather than the default value
   - *<name>_u* - that represents the actual input value that the control designer calculates
 
-- Acquire the list of measurements exposed by the emulator with
+- Acquire the list of measurements exposed by the emulator
 
 .. autoclass:: TestCase
   :members: get_measurements
