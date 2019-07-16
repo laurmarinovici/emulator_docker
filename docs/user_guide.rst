@@ -126,7 +126,7 @@ Inside the `JModelica Docker container`_, the emulator is simulated using a `RES
 
 .. automodule:: testcase
 
-- Acquire the list of inputs the emulator accepts as control signals
+- *Acquire the list of inputs the emulator accepts as control signals*
 
 .. autoclass:: TestCase
   :members: get_inputs
@@ -135,37 +135,37 @@ Inside the `JModelica Docker container`_, the emulator is simulated using a `RES
   - *<name>_activate* - that can take 0 or 1 values indicating that particular input is going to be used for control with the given value rather than the default value
   - *<name>_u* - that represents the actual input value that the control designer calculates
 
-- Acquire the list of measurements exposed by the emulator
+- *Acquire the list of measurements exposed by the emulator*
 
 .. autoclass:: TestCase
   :members: get_measurements
 
-- Advance the emulator simulation one step further after providing a set of control inputs to it with
+- *Advance the emulator simulation one step further after providing a set of control inputs to it with*
 
 .. autoclass:: TestCase
   :members: advance
 
-- Obtain the name of the emulator
+- *Obtain the name of the emulator*
 
 .. autoclass:: TestCase
   :members: get_name
 
-- Obtain the simlation time step in seconds
+- *Obtain the simlation time step in seconds*
 
 .. autoclass:: TestCase
   :members: get_step
 
-- Set the simulation time step in seconds
+- *Set the simulation time step in seconds*
 
 .. autoclass:: TestCase
   :members: set_step
 
-- Obtain full trajectories of measurements and control inputs
+- *Obtain full trajectories of measurements and control inputs*
 
 .. autoclass:: TestCase
   :members: get_results
 
-- Obtain key performance indicator (kpi)
+- *Obtain key performance indicator (kpi)*
 
 .. autoclass:: TestCase
   :members: get_kpis
