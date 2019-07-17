@@ -122,29 +122,7 @@ Inside the `JModelica Docker container`_, the emulator is simulated using a `RES
 
 - implement a test case Python class that defines the API used by the REST requests to perform functions such as advancing the simulation, retrieving test case information, and calculating and reporting results
 
-  
-
 - instantiate the emulator and define the REST API to interact with it through different requests
-
-  **Code documentation -** *restapi.py*
-
-  .. autoclass:: Advance
-    :members:
-
-  .. autoclass:: Inputs
-    :members:
-  
-  .. autoclass:: Measurements
-    :members:
-  
-  .. autoclass:: Results
-    :members:
-  
-  .. autoclass:: KPI
-    :members:
-  
-  .. autoclass:: Name
-    :members:
 
 Running emulator simulation - Example
 =====================================
