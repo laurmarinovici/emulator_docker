@@ -130,6 +130,8 @@ Inside the `JModelica Docker container`_, the emulator is simulated using a `RES
   **Code documentation -** *testcase.py*
 
   .. automodule:: testcase
+    :members:
+    :undoc-members:
 
   - *Acquire the list of inputs the emulator accepts as control signals*
 
@@ -182,6 +184,8 @@ Inside the `JModelica Docker container`_, the emulator is simulated using a `RES
   **Code documentation -** *restapi.py*
 
   .. automodule:: restapi
+    :members:
+    :undoc-members:
 
   .. autoclass:: restapi.Advance
     :members:
