@@ -6,11 +6,6 @@
 
 Using the emulator
 ======================================================
-.. automodule:: testcase
-  :members:
-
-.. automodule:: restapi
-  :members:
 
 .. toctree::
    :maxdepth: 5
