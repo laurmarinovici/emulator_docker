@@ -27,31 +27,6 @@ from testcase import TestCase
 #except ImportError:
 #    pass
 
-# FLASK REQUIREMENTS
-# ------------------
-app = Flask(__name__)
-api = Api(app)
-# ------------------
-
-# INSTANTIATE TEST CASE
-# ---------------------
-case = TestCase()
-# ---------------------
-
-# DEFINE ARGUMENT PARSERS
-# -----------------------
-# ``step`` interface
-parser_step = reqparse.RequestParser()
-parser_step.add_argument('step')
-# ``reset`` interface
-parser_reset = reqparse.RequestParser()
-parser_reset.add_argument('start')
-# ``advance`` interface
-parser_advance = reqparse.RequestParser()
-for key in case.u.keys():
-    parser_advance.add_argument(key)
-# -----------------------
-
 # DEFINE REST REQUESTS
 # --------------------
 class Advance(Resource):
@@ -138,17 +113,42 @@ class Name(Resource):
         return name
 # --------------------
         
-# ADD REQUESTS TO API WITH URL EXTENSION
-# --------------------------------------
-api.add_resource(Advance, '/advance')
-api.add_resource(Reset, '/reset')
-api.add_resource(Step, '/step')
-api.add_resource(Inputs, '/inputs')
-api.add_resource(Measurements, '/measurements')
-api.add_resource(Results, '/results')
-api.add_resource(KPI, '/kpi')
-api.add_resource(Name, '/name')
-# --------------------------------------
-
 if __name__ == '__main__':
+    # FLASK REQUIREMENTS
+    # ------------------
+    app = Flask(__name__)
+    api = Api(app)
+    # ------------------
+
+    # INSTANTIATE TEST CASE
+    # ---------------------
+    case = TestCase()
+    # ---------------------
+
+    # DEFINE ARGUMENT PARSERS
+    # -----------------------
+    # ``step`` interface
+    parser_step = reqparse.RequestParser()
+    parser_step.add_argument('step')
+    # ``reset`` interface
+    parser_reset = reqparse.RequestParser()
+    parser_reset.add_argument('start')
+    # ``advance`` interface
+    parser_advance = reqparse.RequestParser()
+    for key in case.u.keys():
+        parser_advance.add_argument(key)
+    # -----------------------
+
+    # ADD REQUESTS TO API WITH URL EXTENSION
+    # --------------------------------------
+    api.add_resource(Advance, '/advance')
+    api.add_resource(Reset, '/reset')
+    api.add_resource(Step, '/step')
+    api.add_resource(Inputs, '/inputs')
+    api.add_resource(Measurements, '/measurements')
+    api.add_resource(Results, '/results')
+    api.add_resource(KPI, '/kpi')
+    api.add_resource(Name, '/name')
+    # --------------------------------------
+
     app.run(debug=False, host='0.0.0.0')
