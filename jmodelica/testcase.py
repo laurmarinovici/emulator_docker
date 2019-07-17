@@ -42,8 +42,7 @@ class TestCase(object):
             input_names = self.fmu.get_model_variables(causality = 2).keys()
             output_names = self.fmu.get_model_variables(causality = 3).keys()
         else:
-            print("FMU must be version 2.0.")
-            # raise ValueError("FMU must be version 2.0.")
+            raise ValueError("FMU must be version 2.0.")
         # Define measurements
         self.y = {'time':[]}
         for key in output_names:
