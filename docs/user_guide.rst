@@ -76,11 +76,13 @@ Getting the JModelica emulator docker image
 **Note.** The following procedures are related to Mac OS and Ubuntu.
 
 Once Docker desktop is installed on the host computer, to get access to the JModelica container, one could follow the steps below. Details on the Docker commands can be found on the `Docker documentation`_ page.
+
 .. _Docker documentation: https://docs.docker.com
 
 1. Open a terminal window.
 
 2. At the terminal prompt type
+
 .. code::
 
   docker pull <..... I NEED A DOCKER HUB LINK ......>
@@ -88,11 +90,13 @@ Once Docker desktop is installed on the host computer, to get access to the JMod
 The docker image will be downloaded on the host computer.
 
 3. To inspect the Docker images downloaded type
+
 .. code::
 
   docker images
 
 4. To instantiate the Docker container, run
+
 .. code::
 
   docker run -it --rm -p="127.0.0.1:5000:5000" \
@@ -100,6 +104,7 @@ The docker image will be downloaded on the host computer.
            --network=host --name=<container name> <image name> bash
 
 5. Once the container has been created, it should show up listed when running
+
 .. code::
 
   docker ps -a
