@@ -62,7 +62,7 @@ class Advance(Resource):
         y = case.advance(u)
         # print y
         yCelsius = y['TOutDryBul_y'] - 273.15
-        print 'Outside temperature: {0} deg Kelvin ({1} deg Celsius).'.format(y['TOutDryBul_y'], yCelsius)
+        # print 'Outside temperature: {0} deg Kelvin ({1} deg Celsius).'.format(y['TOutDryBul_y'], yCelsius)
         return y
 
 class Reset(Resource):
