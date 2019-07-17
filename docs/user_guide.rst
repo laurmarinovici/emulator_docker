@@ -124,6 +124,8 @@ Inside the `JModelica Docker container`_, the emulator is simulated using a `RES
 
   **Code documentation -** *testcase.py*
 
+  .. autodoc_mock_imports = ["flask", "flask_restful", "pyfmi", "numpy", "copy", "testcase"]
+  
   .. automodule:: testcase
 
   - *Acquire the list of inputs the emulator accepts as control signals*
