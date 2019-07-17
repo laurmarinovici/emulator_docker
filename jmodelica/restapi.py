@@ -13,20 +13,20 @@ This module implements the REST API used to interact with the test case.
 The API is implemented using the ``flask`` package.  
 """
 
-try:
-    # GENERAL PACKAGE IMPORT
-    # ----------------------
-    from flask import Flask
-    from flask_restful import Resource, Api, reqparse
-    # ----------------------
+#try:
+# GENERAL PACKAGE IMPORT
+# ----------------------
+from flask import Flask
+from flask_restful import Resource, Api, reqparse
+# ----------------------
 
-    # TEST CASE IMPORT
-    # ----------------
-    from testcase import TestCase
-    # ----------------
-except ImportError:
-    pass
-    
+# TEST CASE IMPORT
+# ----------------
+from testcase import TestCase
+# ----------------
+#except ImportError:
+#    pass
+
 # FLASK REQUIREMENTS
 # ------------------
 app = Flask(__name__)
