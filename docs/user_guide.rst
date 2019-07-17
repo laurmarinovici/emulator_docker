@@ -128,8 +128,6 @@ Inside the `JModelica Docker container`_, the emulator is simulated using a `RES
 
   **Code documentation -** *restapi.py*
 
-  .. automodule:: restapi
-
   .. autoclass:: Advance
     :members:
 
