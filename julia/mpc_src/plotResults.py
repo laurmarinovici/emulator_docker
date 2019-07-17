@@ -9,12 +9,28 @@ def plot_measurement(fig, Axis, dataFile, measurement):
   timeInd = np.where(data.columns.values == 'minute_of_day')
   measValues = data.values[:, measInd[0][0]]
   timeValues = data.values[:, timeInd[0][0]]
-  hPlot = Axis.plot(timeValues, measValues)
+  hPlot = Axis.step(timeValues, measValues)
+  return hPlot
+
+def plot_status(fig, Axis, dataFile, measurement, statusType, mark):
+  data = pd.read_csv(dataFile)
+  measInd = np.where(data.columns.values == measurement)
+  statusInd = np.where(data.columns.values == 'status')
+  timeInd = np.where(data.columns.values == 'minute_of_day')
+  measValues = data.values[:, measInd[0][0]]
+  statusValues = data.values[:, statusInd[0][0]]
+  desiredStatusInd = np.where(statusValues == statusType)
+  timeValues = data.values[:, timeInd[0][0]]
+  hPlot = Axis.plot(timeValues[desiredStatusInd], measValues[desiredStatusInd])
+  hPlot[0].set(marker = mark, markersize = 6, linestyle = 'None')
   return hPlot
 
 def main():
+  figWidth = 10
+  figHeight = 8
+
   resultsFile_base = './results/run2-base-case/cl_results.csv'
-  resultsFile_mpc = './results/run3-mpc/cl_results.csv'
+  resultsFile_mpc = './results/run10-mpc-10/cl_results.csv'
 
   # comfort_params
   zonetemp_min_occ = 21.11   # (float) lower comfort bound in occupied periods
@@ -24,9 +40,10 @@ def main():
   startOccTime = 60 * 6 # minute of day occupancy starts, that is 6:00 AM
   endOccTime = 60 * 20 - 1 # minute of day occupancy ends, that is 19:59 
   
-  '''
+  
   # plot outside temperature
-  measurement = 'TOutDryBul_y'
+  measurementOutside = 'TOutDryBul_y'
+  '''
   fig, Axis = plt.subplots(3, 1, figsize = (24, 10))
   hPlot1 = plot_measurement(fig, h1Axis, resultsFile_base, measurement)
   hPlot1[0].set(color = 'blue', linewidth = 4, linestyle = '-')
@@ -38,8 +55,9 @@ def main():
   h1Axis.grid()
   #with mpl.rc_context(rc={'interactive': False}):
   #  plt.show()
-'''
+  '''
 
+  # =========== Figure 1 ============
   # plot air supply temperature
   floor = 1
   zone = 1
@@ -48,10 +66,13 @@ def main():
   measurement3 = 'heatsp'
   measurement4 = 'coolsp'
   
-  fig, (h1Axis, h2Axis) = plt.subplots(2, 1, figsize = (20, 8))
+  fig, (h1Axis, h2Axis) = plt.subplots(2, 1, figsize = (figWidth, figHeight))
   hPlot2 = plot_measurement(fig, h1Axis, resultsFile_base, measurement2)
   hPlot2[0].set(color = 'blue', linewidth = 2, linestyle = '-')
   
+  hPlot7 = plot_measurement(fig, h1Axis, resultsFile_base, measurementOutside)
+  hPlot7[0].set(color = 'magenta', linewidth = 2, linestyle = '-')
+
   hPlot4 = plot_measurement(fig, h1Axis, resultsFile_mpc, measurement2)
   hPlot4[0].set(color = 'red', linewidth = 2, linestyle = '-')
   left, right = h1Axis.get_xlim()
@@ -73,9 +94,9 @@ def main():
   h1Axis.set_xlim(22, right)
   #h1Axis.set_ylim(bottom, top)
   xticklabels = []
-  for tick in h1Axis.get_xticks():
-    xticklabels.append(str(int(divmod(tick, 60)[0])) + ':' + str(int(divmod(tick, 60)[1])))
-  h1Axis.set_xticklabels(xticklabels)
+  #for tick in h1Axis.get_xticks():
+  #  xticklabels.append(str(int(divmod(tick, 60)[0])) + ':' + str(int(divmod(tick, 60)[1])))
+  #h1Axis.set_xticklabels(xticklabels)
   h1Axis.grid()
   
   hPlot1 = plot_measurement(fig, h2Axis, resultsFile_base, measurement1)
@@ -90,9 +111,9 @@ def main():
   h2Axis.set_xlim(22, right)
   #h1Axis.set_ylim(bottom, top)
   xticklabels = []
-  for tick in h2Axis.get_xticks():
-    xticklabels.append(str(int(divmod(tick, 60)[0])) + ':' + str(int(divmod(tick, 60)[1])))
-  h2Axis.set_xticklabels(xticklabels)
+  #for tick in h2Axis.get_xticks():
+  #  xticklabels.append(str(int(divmod(tick, 60)[0])) + ':' + str(int(divmod(tick, 60)[1])))
+  #h2Axis.set_xticklabels(xticklabels)
   h2Axis.grid()
 
   # =============================================
@@ -100,7 +121,7 @@ def main():
   setpointZone = []
   for zone in range(1, 6):
     setpointZone.append('floor' + str(floor) + '_zon' + str(zone) + '_oveTSetDisAir_u')
-  hFig, hAxis = plt.subplots(1, 1, figsize = (20, 8))
+  hFig, hAxis = plt.subplots(1, 1, figsize = (figWidth, figHeight))
   h1Plot = plot_measurement(hFig, hAxis, resultsFile_mpc, setpointAHU)
   h1Plot[0].set(color = 'blue', linewidth = 4, linestyle = '-')
   hAxis.set(title = 'Floor ' + str(floor) + ' - AHU and zone supply setpoints',
@@ -119,115 +140,132 @@ def main():
   hAxis.set_xlim(24, right)
   hAxis.set_ylim(min(hPlot[0][0].get_ydata()[24:]) - 1, max(hPlot[0][0].get_ydata()) + 1)
   xticklabels = []
-  for tick in hAxis.get_xticks():
-    xticklabels.append(str(int(divmod(tick, 60)[0])) + ':' + str(int(divmod(tick, 60)[1])))
-  hAxis.set_xticklabels(xticklabels)
+  #for tick in hAxis.get_xticks():
+  #  xticklabels.append(str(int(divmod(tick, 60)[0])) + ':' + str(int(divmod(tick, 60)[1])))
+  #hAxis.set_xticklabels(xticklabels)
   hAxis.grid()
   
   # ===================================================================
   measurement5 = 'floor' + str(floor) + '_TSupAir_y'
-  fig, h1Axis = plt.subplots(1, 1, figsize = (20, 8))
+  fig, h1Axis = plt.subplots(1, 1, figsize = (figWidth, figHeight))
   hPlot2 = plot_measurement(fig, h1Axis, resultsFile_mpc, measurement5)
   hPlot2[0].set(color = 'blue', linewidth = 2, linestyle = '-')
   hPlot4 = plot_measurement(fig, h1Axis, resultsFile_mpc, setpointAHU)
   hPlot4[0].set(color = 'red', linewidth = 2, linestyle = '-')
+  hPlot5 = plot_status(fig, h1Axis, resultsFile_mpc, setpointAHU, 'LOCALLY_SOLVED', 'o')
+  hPlot6 = plot_status(fig, h1Axis, resultsFile_mpc, setpointAHU, 'ITERATION_LIMIT', 'd')
+  hPlot7 = plot_status(fig, h1Axis, resultsFile_mpc, setpointAHU, 'ALMOST_LOCALLY_SOLVED', '*')
   left, right = h1Axis.get_xlim()
   bottom, top = h1Axis.get_ylim()
   h1Axis.set(title = 'Floor ' + str(floor) + ' - AHU supply temperature',
            ylabel = 'temperature [deg C]')
-  h1Axis.legend((measurement5 + ' - mpc', setpointAHU + ' - mpc'), loc = 'upper left')
+  h1Axis.legend((measurement5 + ' - mpc', setpointAHU + ' - mpc', 'LOCALLY_SOLVED', 'ITERATION_LIMIT', 'ALMOST_LOCALLY_SOLVED'), loc = 'upper left')
   h1Axis.set_xlim(22, right)
   h1Axis.set_ylim(10, top)
   xticklabels = []
-  for tick in h1Axis.get_xticks():
-    xticklabels.append(str(int(divmod(tick, 60)[0])) + ':' + str(int(divmod(tick, 60)[1])))
-  h1Axis.set_xticklabels(xticklabels)
+  #for tick in h1Axis.get_xticks():
+  #  xticklabels.append(str(int(divmod(tick, 60)[0])) + ':' + str(int(divmod(tick, 60)[1])))
+  #h1Axis.set_xticklabels(xticklabels)
   h1Axis.grid()
 
   #hPlot5 = plot_measurement(fig, h1Axis, resultsFile_mpc, setpoint)
   #Plot5[0].set(color = 'black', linewidth = 1, linestyle = '-')
 
-  '''
+  # =========================================================================
   # plot air supply temperature
-  floor = 2
   zone = 1
+  hFig = []
+  hPlot = []
+  hAxis = []
+  legendText = []
   measurement = 'floor' + str(floor) + '_zon' + str(zone) + '_TSupAir_y'
-  # fig, Axis = plt.subplots(1, 1, figsize = (12, 5))
-  hPlot1 = plot_measurement(fig, h2Axis, resultsFile_base, measurement)
-  hPlot1[0].set(color = 'blue', linewidth = 4, linestyle = '-')
-  hPlot2 = plot_measurement(fig, h2Axis, resultsFile_mpc, measurement)
-  hPlot2[0].set(color = 'red', linewidth = 2, linestyle = '--')
-  h2Axis.set(title = 'Floor ' + str(floor) + ' / Zone ' + str(zone) + ' - Air supply temperature',
-           xlabel = 'minute of day', ylabel = 'temperature [deg C]')
-  h2Axis.legend(('base', 'mpc'), loc = 'upper right')
-  h2Axis.grid()
-  #with mpl.rc_context(rc={'interactive': False}):
-  #  plt.show()
-
-
-  # plot fan power
-  floor = 2
-  measurement = 'floor' + str(floor) + '_Pfan_y'
-  #fig, Axis = plt.subplots(1, 1, figsize = (12, 5))
-  hPlot1 = plot_measurement(fig, h3Axis, resultsFile_base, measurement)
-  hPlot1[0].set(color = 'blue', linewidth = 4, linestyle = '-')
-  hPlot2 = plot_measurement(fig, h3Axis, resultsFile_mpc, measurement)
-  hPlot2[0].set(color = 'red', linewidth = 2, linestyle = '--')
-  h3Axis.set(title = 'Floor ' + str(floor) + ' - fan power',
-           xlabel = 'minute of day', ylabel = 'power [KW]')
-  h3Axis.legend(('base', 'mpc'), loc = 'upper right')
-  h3Axis.grid()
-
-
-  floor = 2
-  zone = 1
-  measurement = 'floor' + str(floor) + '_zon' + str(zone) + '_TRooAir_y'
   setpoint = 'floor' + str(floor) + '_zon' + str(zone) + '_oveTSetDisAir_u'
-  #fig, Axis = plt.subplots(1, 1, figsize = (12, 5))
-  hPlot1 = plot_measurement(fig, h3Axis, resultsFile_base, measurement)
-  hPlot1[0].set(color = 'blue', linewidth = 4, linestyle = '-')
-  hPlot2 = plot_measurement(fig, h3Axis, resultsFile_mpc, measurement)
+  hFig, hAxis = plt.subplots(1, 1, figsize = (figWidth, figHeight))
+  hPlot1 = plot_measurement(hFig, hAxis, resultsFile_mpc, measurement)
+  hPlot1[0].set(color = 'blue', linewidth = 2, linestyle = '-')
+  legendText.append(measurement + ' - mpc')
+  hPlot2 = plot_measurement(hFig, hAxis, resultsFile_mpc, setpoint)
   hPlot2[0].set(color = 'red', linewidth = 2, linestyle = '-')
-  #hPlot3 = plot_measurement(fig, h3Axis, resultsFile_mpc, setpoint)
-  #hPlot3[0].set(color = 'green', linewidth = 2, linestyle = '-.')
-  h3Axis.set(title = 'Floor ' + str(floor) + ' / Zone ' + str(zone) + ' - temperature',
+  legendText.append(setpoint + ' - mpc')
+  hPlot3 = plot_measurement(hFig, hAxis, resultsFile_mpc, measurement3)
+  hPlot3[0].set(color = 'black', linewidth = 2, linestyle = '--')
+  legendText.append(measurement3)
+  hPlot4 = plot_measurement(hFig, hAxis, resultsFile_mpc, measurement4)
+  hPlot4[0].set(color = 'black', linewidth = 2, linestyle = '--')
+  legendText.append(measurement4)
+  hAxis.set(title = 'Floor ' + str(floor) + ' / Zone ' + str(zone) + ' - Air supply temperature',
            xlabel = 'minute of day', ylabel = 'temperature [deg C]')
-  h3Axis.legend(('y - base', 'y - mpc', 'u - mpc'), loc = 'upper right')
-  h3Axis.grid()
-  '''
+  left, right = hAxis.get_xlim()
+  bottom, top = hAxis.get_ylim()
+  hAxis.legend((measurement + ' - mpc', setpoint + ' - mpc'), loc = 'upper right')
+  hAxis.set_xlim(24, right)
+  hAxis.set_ylim(min(np.minimum(hPlot1[0].get_ydata()[24:], hPlot3[0].get_ydata()[24:])) - 1, max(np.maximum(hPlot1[0].get_ydata()[24:], hPlot4[0].get_ydata()[24:])) + 1)
+  hAxis.grid()
+  
+  # =========================================================================
+  setpointZone = []
+  hPlot=[]
+  hFig = []
+  hAxis = []
+  legendText = []
+  for zone in range(1, 6):
+    setpointZone.append('floor' + str(floor) + '_zon' + str(zone) + '_oveHeaOut_u')
+  hFig, hAxis = plt.subplots(1, 1, figsize = (figWidth, figHeight))
+  for setpoint in setpointZone:
+    h = plot_measurement(hFig, hAxis, resultsFile_mpc, setpoint)
+    hPlot.append(h)
+    hPlot[setpointZone.index(setpoint)][0].set(linewidth = 2, linestyle = '-')
+    legendText.append(setpoint)
+  left, right = hAxis.get_xlim()
+  bottom, top = hAxis.get_ylim()
+  hAxis.legend((legendText), loc = 'upper right')
+  hAxis.set_xlim(24, right)
+  hAxis.set_ylim(min(hPlot[0][0].get_ydata()[24:]) - 1, max(hPlot[0][0].get_ydata()) + 1)
+  xticklabels = []
+  #for tick in hAxis.get_xticks():
+  #  xticklabels.append(str(int(divmod(tick, 60)[0])) + ':' + str(int(divmod(tick, 60)[1])))
+  #hAxis.set_xticklabels(xticklabels)
+  hAxis.grid()
 
-  '''
-  measurement = 'floor' + str(floor) + '_TSupAir_y'
-  setpoint = 'floor' + str(floor) + '_aHU_con_oveTSetSupAir_u'
-  hPlot1 = plot_measurement(fig, h2Axis, resultsFile_base, measurement)
-  hPlot1[0].set(color = 'blue', linewidth = 4, linestyle = '-')
-  hPlot2 = plot_measurement(fig, h2Axis, resultsFile_mpc, measurement)
-  hPlot2[0].set(color = 'red', linewidth = 2, linestyle = '-')
-  hPlot3 = plot_measurement(fig, h2Axis, resultsFile_mpc, setpoint)
-  hPlot3[0].set(color = 'green', linewidth = 2, linestyle = '-.')
-  h2Axis.set(title = 'Floor ' + str(floor) + ' / Zone ' + str(zone) + ' - temperature',
-           ylabel = 'temperature [deg C]')
-  h2Axis.legend((measurement + ' - base', measurement + ' - mpc', setpoint + ' - mpc'), loc = 'upper left')
-  left, right = h2Axis.get_xlim()
-  bottom, top = h2Axis.get_ylim()
-  h2Axis.set_xlim(22, right)
-  h2Axis.set_ylim(10, 30)
-  h2Axis.set_xticklabels(xticklabels)
-  h2Axis.grid()
+  # ======= energy consumption ======
+  measurementPChiller = 'PChi_y'
+  measurementPPump = 'PPum_y'
+  measurementPFan = []
+  hPlot=[]
+  hFig = []
+  hAxis = []
+  legendText = []
+  for floor in range (1, 4):
+    measurementPFan.append('floor' + str(floor) + '_Pfan_y')
+  hFig, hAxis = plt.subplots(1, 1, figsize = (figWidth, figHeight))
+  hPlot1 = plot_measurement(hFig, hAxis, resultsFile_mpc, measurementPChiller)
+  hPlot1[0].set(color = 'red', linewidth = 2, linestyle = '-')
+  legendText.append(measurementPChiller)
+  hPlot2 = plot_measurement(hFig, hAxis, resultsFile_mpc, measurementPPump)
+  hPlot2[0].set(color = 'blue', linewidth = 2, linestyle = '-')
+  legendText.append(measurementPPump)
+  left, right = hAxis.get_xlim()
+  bottom, top = hAxis.get_ylim()
+  hAxis.legend((legendText), loc = 'upper left')
+  hAxis.set_xlim(24, right)
+  hAxis.grid()
 
-  setpoint = 'floor' + str(floor) + '_zon' + str(zone) + '_oveHeaOut_u'
-  hPlot1 = plot_measurement(fig, h3Axis, resultsFile_mpc, setpoint)
-  hPlot1[0].set(color = 'blue', linewidth = 4, linestyle = '-')
-  h3Axis.set(title = 'Floor ' + str(floor) + ' / Zone ' + str(zone) + ' - VAV valve',
-           xlabel = 'time of day', ylabel = 'fraction')
-  h3Axis.legend((setpoint + ' - mpc',), loc = 'upper left') #, bbox_to_anchor=(0, 0))
-  left, right = h3Axis.get_xlim()
-  bottom, top = h3Axis.get_ylim()
-  h3Axis.set_xlim(22, right)
-  #h3Axis.set_ylim(0, top)
-  h3Axis.set_xticklabels(xticklabels)
-  h3Axis.grid()
-  '''
+  hAxis = []
+  hPlot = []
+  legendText = []
+  hFig, hAxis = plt.subplots(1, 1, figsize = (figWidth, figHeight))
+  for meas in measurementPFan:
+    h = plot_measurement(hFig, hAxis, resultsFile_mpc, meas)
+    hPlot.append(h)
+    hPlot[measurementPFan.index(meas)][0].set(linewidth = 2, lineStyle = '-')
+    legendText.append(meas)
+  left, right = hAxis.get_xlim()
+  bottom, top = hAxis.get_ylim()
+  hAxis.legend((legendText), loc = 'upper left')
+  hAxis.set_xlim(24, right)
+  # hAxis.set_ylim(min(hPlot[0][0].get_ydata()[24:]) - 1, max(hPlot[0][0].get_ydata()) + 1)
+  hAxis.grid()
+
   plt.subplots_adjust(hspace = 0.35)
   with mpl.rc_context(rc={'interactive': False}):
     plt.show()

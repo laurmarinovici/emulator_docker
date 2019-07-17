@@ -1,3 +1,12 @@
+"""
+.. module:: restapi
+
+  :platform: Unix, Windows
+
+  :synopsis: This module implements the REST API used to interact with the test case. The API is implemented using the ``flask`` package. 
+
+.. moduleauthor:: Sen Huang
+"""
 # -*- coding: utf-8 -*-
 """
 This module implements the REST API used to interact with the test case.  

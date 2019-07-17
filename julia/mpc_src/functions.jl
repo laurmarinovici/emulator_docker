@@ -664,9 +664,11 @@ function setoverrides!(df::DataFrames.DataFrame;
                 # ahu supply temperatures
                 df[Symbol("floor$(f)_aHU_con_oveTSetSupAir_activate")] = 1
                 if unit == "Kelvin"
-                    df[Symbol("floor$(f)_aHU_con_oveTSetSupAir_u")] = JuMP.value(ahusupplytemp[f, stage]) + 273.15
+                    df[Symbol("floor$(f)_aHU_con_oveTSetSupAir_u")] = 35 + 273.15
+                    # JuMP.value(ahusupplytemp[f, stage]) + 273.15
                 else
-                    df[Symbol("floor$(f)_aHU_con_oveTSetSupAir_u")] = JuMP.value(ahusupplytemp[f, stage])
+                    df[Symbol("floor$(f)_aHU_con_oveTSetSupAir_u")] = 35
+                    # JuMP.value(ahusupplytemp[f, stage])
                 end
 
                 # static pressure setpoint

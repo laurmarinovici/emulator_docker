@@ -120,9 +120,9 @@ Inside the `JModelica Docker container`_, the emulator is simulated using a `RES
 
 - configure the test case, that is specify the emulator to be simulated and set the simulation time step in seconds (config.py)
 
-- implement a test case Python class that defines the API used by the REST requests to perform functions such as advancing the simulation, retrieving test case information, and calculating and reporting results (testcase.py)
+- implement a test case Python class that defines the API used by the REST requests to perform functions such as advancing the simulation, retrieving test case information, and calculating and reporting results
 
-  **Code documentation**
+  **Code documentation - ** *testcase.py*
 
   .. automodule:: testcase
 
@@ -131,7 +131,7 @@ Inside the `JModelica Docker container`_, the emulator is simulated using a `RES
     The emulator inputs are pairs of 2 values for each control signal:
 
     - *<name>_activate* - that can take 0 or 1 values indicating that particular input is going to be used for control with the given value rather than the default value
-    
+
     - *<name>_u* - that represents the actual input value that the control designer calculates
 
   .. autoclass:: TestCase
@@ -172,7 +172,29 @@ Inside the `JModelica Docker container`_, the emulator is simulated using a `RES
   .. autoclass:: TestCase
     :members: get_kpis
 
-- instantiate the emulator and define the REST API to interact with it through different requests (restapi.py)
+- instantiate the emulator and define the REST API to interact with it through different requests
+
+  **Code documentation - ** *restapi.py*
+
+  .. automodule:: restapi
+
+  .. autoclass:: Advance
+    :members:
+
+  .. autoclass:: Inputs
+    :members:
+  
+  .. autoclass:: Measurements
+    :members:
+  
+  .. autoclass:: Results
+    :members:
+  
+  .. autoclass:: KPI
+    :members:
+  
+  .. autoclass:: Name
+    :members:
 
 Running emulator simulation - Example
 =====================================
