@@ -137,7 +137,6 @@ Inside the `JModelica Docker container`_, the emulator is simulated using a `RES
 
 - *Acquire the list of measurements exposed by the emulator*
 
-.. autoclass:: TestCase
   :members: get_measurements
 
 - *Advance the emulator simulation one step further after providing a set of control inputs to it with*
