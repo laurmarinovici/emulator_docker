@@ -201,9 +201,7 @@ class TestCase(object):
             Dictionary of measurement and control input names and their 
             trajectories as lists.
             {'y':{<measurement_name>:<measurement_trajectory>},
-             'u':{<input_name>:<input_trajectory>}
-            }
-        
+             'u':{<input_name>:<input_trajectory>}}
         '''
         
         Y = {'y':self.y_store, 'u':self.u_store}
