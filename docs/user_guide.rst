@@ -122,53 +122,55 @@ Inside the `JModelica Docker container`_, the emulator is simulated using a `RES
 
 - implement a test case Python class that defines the API used by the REST requests to perform functions such as advancing the simulation, retrieving test case information, and calculating and reporting results (testcase.py)
 
-**Code documentation**
+  **Code documentation**
 
-.. automodule:: testcase
+  .. automodule:: testcase
 
-- *Acquire the list of inputs the emulator accepts as control signals*
+  - *Acquire the list of inputs the emulator accepts as control signals*
 
-  The emulator inputs are pairs of 2 values for each control signal:
-  - *<name>_activate* - that can take 0 or 1 values indicating that particular input is going to be used for control with the given value rather than the default value
-  - *<name>_u* - that represents the actual input value that the control designer calculates
+    The emulator inputs are pairs of 2 values for each control signal:
 
-.. autoclass:: TestCase
-  :members: get_inputs
+    - *<name>_activate* - that can take 0 or 1 values indicating that particular input is going to be used for control with the given value rather than the default value
+    
+    - *<name>_u* - that represents the actual input value that the control designer calculates
 
-- *Acquire the list of measurements exposed by the emulator*
+  .. autoclass:: TestCase
+    :members: get_inputs
 
-.. autoclass:: TestCase
-  :members: get_measurements
+  - *Acquire the list of measurements exposed by the emulator*
 
-- *Advance the emulator simulation one step further after providing a set of control inputs to it with*
+  .. autoclass:: TestCase
+    :members: get_measurements
 
-.. autoclass:: TestCase
-  :members: advance
+  - *Advance the emulator simulation one step further after providing a set of control inputs to it with*
 
-- *Obtain the name of the emulator*
+  .. autoclass:: TestCase
+    :members: advance
 
-.. autoclass:: TestCase
-  :members: get_name
+  - *Obtain the name of the emulator*
 
-- *Obtain the simlation time step in seconds*
+  .. autoclass:: TestCase
+    :members: get_name
 
-.. autoclass:: TestCase
-  :members: get_step
+  - *Obtain the simlation time step in seconds*
 
-- *Set the simulation time step in seconds*
+  .. autoclass:: TestCase
+    :members: get_step
 
-.. autoclass:: TestCase
-  :members: set_step
+  - *Set the simulation time step in seconds*
 
-- *Obtain full trajectories of measurements and control inputs*
+  .. autoclass:: TestCase
+    :members: set_step
 
-.. autoclass:: TestCase
-  :members: get_results
+  - *Obtain full trajectories of measurements and control inputs*
 
-- *Obtain key performance indicator (kpi)*
+  .. autoclass:: TestCase
+    :members: get_results
 
-.. autoclass:: TestCase
-  :members: get_kpis
+  - *Obtain key performance indicator (kpi)*
+
+  .. autoclass:: TestCase
+    :members: get_kpis
 
 - instantiate the emulator and define the REST API to interact with it through different requests (restapi.py)
 
