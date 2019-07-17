@@ -179,6 +179,28 @@ Inside the `JModelica Docker container`_, the emulator is simulated using a `RES
 
 - instantiate the emulator and define the REST API to interact with it through different requests
 
+  **Code documentation -** *restapi.py*
+
+  .. automodule:: restapi
+
+  .. autoclass:: restapi.Advance
+    :members:
+
+  .. autoclass:: restapi.Inputs
+    :members:
+  
+  .. autoclass:: restapi.Measurements
+    :members:
+  
+  .. autoclass:: restapi.Results
+    :members:
+  
+  .. autoclass:: restapi.KPI
+    :members:
+  
+  .. autoclass:: restapi.Name
+    :members:
+
 Running emulator simulation - Example
 =====================================
 
