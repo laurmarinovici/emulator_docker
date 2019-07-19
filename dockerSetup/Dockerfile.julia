@@ -3,8 +3,8 @@ ARG UBUNTU_VERSION=:18.04
 
 FROM ${UBUNTU}${UBUNTU_VERSION} AS ubuntu-base
 
-ENV USER_NAME=julia_user
-ENV WORK_DIR=/home/${USER_NAME}
+# ENV USER_NAME=julia_user
+# ENV WORK_DIR=/home/${USER_NAME}
 
 ENV JULIA_VERSION=1.1.1
 ENV JULIA_PATH=/usr/local/julia
@@ -40,12 +40,8 @@ RUN apt-get update && \
     pip list --format=columns && \
     echo "===== install NUMPY =====" && \
     pip install --upgrade --ignore-installed numpy && \
-    echo "===== install MATPLOTLIB =====" && \
-    pip install --upgrade --ignore-installed matplotlib && \
     echo "===== install SCIPY =====" && \
     pip install --upgrade --ignore-installed scipy && \
-    echo "===== install COLORAMA =====" && \
-    pip install --upgrade --ignore-installed colorama && \
     echo "===== current PYTHON modules =====" && \
     pip list --format=columns && \
     dirArch="x64" && tarArch="x86_64" && folder="$(echo "$JULIA_VERSION" | cut -d. -f1-2)" && tarName="julia.tar.gz" && \
@@ -54,9 +50,10 @@ RUN apt-get update && \
     rm ${tarName} && \
     apt-get purge -y --auto-remove -o APT::AutoRemove::RecommendsImportant=false && \
     julia -e 'using Pkg; Pkg.add(["Ipopt", "JuMP", "ConfParser", "MathOptInterface", "DelimitedFiles", "Printf", "HTTP", "JSON", "DataFrames", "CSV", "Dates"])' && \
-    julia --version && \
-    echo "root:julia" | chpasswd && \
-    useradd -m -s /bin/bash ${USER_NAME}
+    julia --version
+    # && \
+    # echo "root:julia" | chpasswd && \
+    # useradd -m -s /bin/bash ${USER_NAME}
 
-USER ${USER_NAME}
-WORKDIR ${WORK_DIR}
+# USER ${USER_NAME}
+# WORKDIR ${WORK_DIR}

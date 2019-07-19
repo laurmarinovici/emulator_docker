@@ -204,7 +204,7 @@ Inside the `JModelica Docker container`_, the emulator is simulated using a `RES
 Running emulator simulation - Example
 =====================================
 
-1. Open the Ubuntu terminal on a distribution that includes Docker.
+1. Open the Ubuntu terminal on a distribution that has Docker installed.
 
 2. Download the JModelica Docker
 
@@ -251,6 +251,6 @@ points to the correct location and name of the emulator FMU.
 
   python restapi.py
 
-which will now wait for requests to access the emulator.
+which will now wait for requests to access the emulator to update control actions or request measurements.
 
 
