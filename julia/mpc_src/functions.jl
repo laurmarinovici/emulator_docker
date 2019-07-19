@@ -526,9 +526,9 @@ function dict2df!(df::DataFrames.DataFrame, data::Dict)
     for v in keys(data)
         # make sure that value is stored as float even if integer value is sent for a "Double" type sent by client
         if typeof(data[v]) == "Float64"
-            df[Symbol(v)] = values(data[v]) * 1.0 # store corresponding value as float
+            df[1, Symbol(v)] = values(data[v]) * 1.0 # store corresponding value as float
         else
-            df[Symbol(v)] = values(data[v])    # store corresponding value as  integer
+            df[1, Symbol(v)] = values(data[v])    # store corresponding value as  integer
         end
     end
     return df
@@ -700,7 +700,7 @@ function setoverrides!(df::DataFrames.DataFrame;
             df[1, Symbol("floor$(f)_aHU_con_oveTSetSupAir_u")] = default
 
             # static pressure setpoint
-            df[Symbol("set_ahupressure_f$f")] = default
+            df[1, Symbol("set_ahupressure_f$f")] = default
 
             ## zone-level setpoints
             for z = 1:p.numzones
@@ -937,22 +937,22 @@ function saveresults(dfMeasurements::DataFrames.DataFrame,
 
     # Save data
     d = DataFrames.DataFrame()          # dataframe to be saved in csv file
-    d[:day_of_week] = day_of_week       # day of the week
-    d[:hour_of_day] = hour_of_day       # hour of the day
-    d[:minute_of_day] = minute_of_day   # minute of the day
-    d[:heatsp] = h[1]                   # heating setpoint
-    d[:coolsp] = c[1]                   # cooling setpoint
-    d[:status] = status                 # status of solver
-    d[:controller] = controller         # controller type
-    d[:MPCstages] = o.numstages         # number of stages for MPC model
-    d[:currMPCstage] = currMPCstage     # current MPC prediction stage used to advance between MPC optimization periods
-    d[:soltime] = soltime               # solution time for MPC if applicable
-    d[:looptime] = looptime             # time to execute one single sample loop
-    d[:penaltyparam] = o.penalty        # penalty parameter
-    d[:experiment] = experiment         # type of experiment
+    d[1, :day_of_week] = day_of_week       # day of the week
+    d[1, :hour_of_day] = hour_of_day       # hour of the day
+    d[1, :minute_of_day] = minute_of_day   # minute of the day
+    d[1, :heatsp] = h[1]                   # heating setpoint
+    d[1, :coolsp] = c[1]                   # cooling setpoint
+    d[1, :status] = status                 # status of solver
+    d[1, :controller] = controller         # controller type
+    d[1, :MPCstages] = o.numstages         # number of stages for MPC model
+    d[1, :currMPCstage] = currMPCstage     # current MPC prediction stage used to advance between MPC optimization periods
+    d[1, :soltime] = soltime               # solution time for MPC if applicable
+    d[1, :looptime] = looptime             # time to execute one single sample loop
+    d[1, :penaltyparam] = o.penalty        # penalty parameter
+    d[1, :experiment] = experiment         # type of experiment
 
     # store slack value
-    d[:slack] = controller == "MPC" ? JuMP.value(slack) : 1e-27
+    d[1, :slack] = controller == "MPC" ? JuMP.value(slack) : 1e-27
 
     # store timestamp for openloop experiments
     if experiment == "openloop"
@@ -966,7 +966,7 @@ function saveresults(dfMeasurements::DataFrames.DataFrame,
     if experiment == "closeloop"
         for f = 1:p.numfloors, z = 1:p.numzones
             name = Symbol("load_f$(f)z$z")
-            d[name] = load[f, z, 1]
+            d[1, name] = load[f, z, 1]
         end
     end
 
