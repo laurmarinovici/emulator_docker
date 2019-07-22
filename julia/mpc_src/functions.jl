@@ -522,6 +522,7 @@ end
 Save current data (measurement) into a dataframe.
 """
 function dict2df!(df::DataFrames.DataFrame, data::Dict)
+    df = DataFrames.DataFrame([typeof(data[k]) for k in keys(data)], [Symbol(k) for k in keays(data)], 1)
     # loop over variable names in data
     for v in keys(data)
         # make sure that value is stored as float even if integer value is sent for a "Double" type sent by client
