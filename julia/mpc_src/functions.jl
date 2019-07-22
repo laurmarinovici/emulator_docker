@@ -714,8 +714,10 @@ function setoverrides!(df::DataFrames.DataFrame;
             for k in names(df)
                 @printf("========== %s =============\n", k)
                 if k == Symbol("set_ahupressure_f$(f)")
+                    @printf("========== %s IF =============\n", k)
                     df[1, Symbol("set_ahupressure_f$f")] = default
                 else
+                    @printf("========== %s ELSE =============\n", k)
                     df.temp = default
                     rename!(df, :temp => Symbol("set_ahupressure_f$f"))
                 end
