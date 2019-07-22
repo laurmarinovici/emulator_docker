@@ -207,7 +207,7 @@ Running emulator simulation - Example
 .. _Simulation setup:
 
   .. figure:: images/simulationDockerDiagram.png
-    :scale: 50 %
+    :scale: 30 %
 
     Figure 1. Emulator Docker diagram
 
