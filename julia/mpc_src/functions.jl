@@ -676,7 +676,7 @@ function setoverrides!(df::DataFrames.DataFrame;
 
                 # static pressure setpoint
                 mflow = JuMP.value(sum_zoneflows[f, 1])
-                df.set_ahupressure_f$f = staticpressure(mflow)
+                df.set_ahupressure_f$(f) = staticpressure(mflow)
                 # df[1, Symbol("set_ahupressure_f$f")] = staticpressure(mflow)
 
                 ## zone-level setpoints
