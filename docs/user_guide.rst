@@ -209,7 +209,7 @@ Running emulator simulation - Example
   .. figure:: images/simulationDockerDiagram.png
     :scale: 30 %
 
-    Figure 1. Emulator Docker diagram
+    Figure 2. Simulation setup diagram
 
 1. Open the Ubuntu terminal on a distribution that has Docker installed.
 
