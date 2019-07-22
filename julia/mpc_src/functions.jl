@@ -522,14 +522,16 @@ end
 Save current data (measurement) into a dataframe.
 """
 function dict2df!(df::DataFrames.DataFrame, data::Dict)
-    df = DataFrames.DataFrame([typeof(data[k]) for k in keys(data)], [Symbol(k) for k in keys(data)], 1)
+    # df = DataFrames.DataFrame([typeof(data[k]) for k in keys(data)], [Symbol(k) for k in keys(data)], 1)
     # loop over variable names in data
     for v in keys(data)
         # make sure that value is stored as float even if integer value is sent for a "Double" type sent by client
         if typeof(data[v]) == "Float64"
-            df[1, Symbol(v)] = values(data[v]) * 1.0 # store corresponding value as float
+            df.v = values(data[v]) * 1.0 # store corresponding value as float
+            # df[1, Symbol(v)] = values(data[v]) * 1.0 # store corresponding value as float
         else
-            df[1, Symbol(v)] = values(data[v])    # store corresponding value as  integer
+            df.v = values(data[v])    # store corresponding value as  integer
+            # df[1, Symbol(v)] = values(data[v])    # store corresponding value as  integer
         end
     end
     return df
@@ -674,7 +676,8 @@ function setoverrides!(df::DataFrames.DataFrame;
 
                 # static pressure setpoint
                 mflow = JuMP.value(sum_zoneflows[f, 1])
-                df[1, Symbol("set_ahupressure_f$f")] = staticpressure(mflow)
+                df.set_ahupressure_f$f = staticpressure(mflow)
+                # df[1, Symbol("set_ahupressure_f$f")] = staticpressure(mflow)
 
                 ## zone-level setpoints
                 for z = 1:p.numzones
