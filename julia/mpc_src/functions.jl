@@ -522,17 +522,17 @@ end
 Save current data (measurement) into a dataframe.
 """
 function dict2df!(df::DataFrames.DataFrame, data::Dict)
-    # df = DataFrames.DataFrame([typeof(data[k]) for k in keys(data)], [Symbol(k) for k in keys(data)], 1)
+    df = DataFrames.DataFrame([typeof(data[k]) for k in keys(data)], [Symbol(k) for k in keys(data)], 1)
     # loop over variable names in data
     for v in keys(data)
         @printf("====== %s ======\n", v)
         # make sure that value is stored as float even if integer value is sent for a "Double" type sent by client
         if typeof(data[v]) == "Float64"
-            df.v = values(data[v]) * 1.0 # store corresponding value as float
-            # df[1, Symbol(v)] = values(data[v]) * 1.0 # store corresponding value as float
+            # df.v = [values(data[v]) * 1.0] # store corresponding value as float
+            df[1, Symbol(v)] = values(data[v]) * 1.0 # store corresponding value as float
         else
-            df.v = values(data[v])    # store corresponding value as  integer
-            # df[1, Symbol(v)] = values(data[v])    # store corresponding value as  integer
+            # df.v = [values(data[v])]    # store corresponding value as  integer
+            df[1, Symbol(v)] = values(data[v])    # store corresponding value as  integer
         end
     end
     return df
@@ -677,7 +677,14 @@ function setoverrides!(df::DataFrames.DataFrame;
 
                 # static pressure setpoint
                 mflow = JuMP.value(sum_zoneflows[f, 1])
-                df."set_ahupressure_f$(f)" = staticpressure(mflow)
+                for k in names(df)
+                    if k == Symbol("set_ahupressure_f$(f)")
+                        df[1, Symbol("set_ahupressure_f$f")] = staticpressure(mflow)
+                    else
+                        df.temp = staticpressure(mflow)
+                        rename!(df, :temp => Symbol("set_ahupressure_f$f"))
+                    end
+                end
                 # df[1, Symbol("set_ahupressure_f$f")] = staticpressure(mflow)
 
                 ## zone-level setpoints
@@ -705,7 +712,15 @@ function setoverrides!(df::DataFrames.DataFrame;
             df[1, Symbol("floor$(f)_aHU_con_oveTSetSupAir_u")] = default
 
             # static pressure setpoint
-            df[1, Symbol("set_ahupressure_f$f")] = default
+            for k in names(df)
+                if k == Symbol("set_ahupressure_f$(f)")
+                    df[1, Symbol("set_ahupressure_f$f")] = default
+                else
+                    df.temp = default
+                    rename!(df, :temp => Symbol("set_ahupressure_f$f"))
+                end
+            end
+            # df[1, Symbol("set_ahupressure_f$f")] = default
 
             ## zone-level setpoints
             for z = 1:p.numzones
