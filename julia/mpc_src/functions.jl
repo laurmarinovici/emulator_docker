@@ -950,7 +950,8 @@ function saveresults(dfMeasurements::DataFrames.DataFrame,
 
     # Save data
     d = DataFrames.DataFrame()          # dataframe to be saved in csv file
-    d[1, :day_of_week] = day_of_week       # day of the week
+    insertcols!(d, size(d, 2) + 1, :day_of_week => day_of_week)
+    # d[1, :day_of_week] = day_of_week       # day of the week
     d[1, :hour_of_day] = hour_of_day       # hour of the day
     d[1, :minute_of_day] = minute_of_day   # minute of the day
     d[1, :heatsp] = h[1]                   # heating setpoint
