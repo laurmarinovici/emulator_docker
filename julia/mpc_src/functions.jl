@@ -525,6 +525,7 @@ function dict2df!(df::DataFrames.DataFrame, data::Dict)
     # df = DataFrames.DataFrame([typeof(data[k]) for k in keys(data)], [Symbol(k) for k in keys(data)], 1)
     # loop over variable names in data
     for v in keys(data)
+        @printf("====== %s ======\n", v)
         # make sure that value is stored as float even if integer value is sent for a "Double" type sent by client
         if typeof(data[v]) == "Float64"
             df.v = values(data[v]) * 1.0 # store corresponding value as float
