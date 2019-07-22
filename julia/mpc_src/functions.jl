@@ -676,13 +676,10 @@ function setoverrides!(df::DataFrames.DataFrame;
 
                 # static pressure setpoint
                 mflow = JuMP.value(sum_zoneflows[f, 1])
-                for k in names(df)
-                    if k == Symbol("set_ahupressure_f$(f)")
-                        df[1, Symbol("set_ahupressure_f$f")] = staticpressure(mflow)
-                    else
-                        df.temp = staticpressure(mflow)
-                        rename!(df, :temp => Symbol("set_ahupressure_f$f"))
-                    end
+                if in(Symbol("set_ahupressure_f$(f)"), names(df))
+                    df[1, Symbol("set_ahupressure_f$f")] = staticpressure(mflow)
+                else
+                    insertcols!(df, size(df, 2) + 1, Symbol("set_ahupressure_f$f") => staticpressure(mflow))
                 end
                 # df[1, Symbol("set_ahupressure_f$f")] = staticpressure(mflow)
 
@@ -711,16 +708,10 @@ function setoverrides!(df::DataFrames.DataFrame;
             df[1, Symbol("floor$(f)_aHU_con_oveTSetSupAir_u")] = default
 
             # static pressure setpoint
-            for k in names(df)
-                @printf("========== %s =============\n", k)
-                if k == Symbol("set_ahupressure_f$(f)")
-                    @printf("========== %s IF =============\n", k)
-                    df[1, Symbol("set_ahupressure_f$f")] = default
-                else
-                    @printf("========== %s ELSE =============\n", k)
-                    df.temp = default
-                    rename!(df, :temp => Symbol("set_ahupressure_f$f"))
-                end
+            if in(Symbol("set_ahupressure_f$(f)"), names(df))
+                df[1, Symbol("set_ahupressure_f$f")] = default
+            else
+                insertcols!(df, size(df, 2) + 1, Symbol("set_ahupressure_f$f") => default)
             end
             # df[1, Symbol("set_ahupressure_f$f")] = default
 
