@@ -20,7 +20,7 @@ RUN apt-get update && \
     echo "===== PIP VERSION =====" && \
     pip --version && \
     echo "===== install FLASK-RESTFUL =====" && \
-    pip install --user flask-restful && \
+    pip install --upgrade --ignore-installed flask-restful && \
     echo "===== current PYTHON modules =====" && \
     pip list --format=columns && \
     echo "root:jmodelica" | chpasswd
