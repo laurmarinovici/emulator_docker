@@ -952,25 +952,39 @@ function saveresults(dfMeasurements::DataFrames.DataFrame,
     d = DataFrames.DataFrame()          # dataframe to be saved in csv file
     insertcols!(d, size(d, 2) + 1, :day_of_week => day_of_week)
     # d[1, :day_of_week] = day_of_week       # day of the week
-    d[1, :hour_of_day] = hour_of_day       # hour of the day
-    d[1, :minute_of_day] = minute_of_day   # minute of the day
-    d[1, :heatsp] = h[1]                   # heating setpoint
-    d[1, :coolsp] = c[1]                   # cooling setpoint
-    d[1, :status] = status                 # status of solver
-    d[1, :controller] = controller         # controller type
-    d[1, :MPCstages] = o.numstages         # number of stages for MPC model
-    d[1, :currMPCstage] = currMPCstage     # current MPC prediction stage used to advance between MPC optimization periods
-    d[1, :soltime] = soltime               # solution time for MPC if applicable
-    d[1, :looptime] = looptime             # time to execute one single sample loop
-    d[1, :penaltyparam] = o.penalty        # penalty parameter
-    d[1, :experiment] = experiment         # type of experiment
+    insertcols!(d, size(d, 2) + 1, :hour_of_day => hour_of_day)
+    # d[1, :hour_of_day] = hour_of_day       # hour of the day
+    insertcols!(d, size(d, 2) + 1, :minute_of_day => minute_of_day)
+    # d[1, :minute_of_day] = minute_of_day   # minute of the day
+    insertcols!(d, size(d, 2) + 1, :heatsp => h[1])
+    # d[1, :heatsp] = h[1]                   # heating setpoint
+    insertcols!(d, size(d, 2) + 1, :coosp => c[1])
+    # d[1, :coolsp] = c[1]                   # cooling setpoint
+    insertcols!(d, size(d, 2) + 1, :status => status)
+    # d[1, :status] = status                 # status of solver
+    insertcols!(d, size(d, 2) + 1, :controller => controller)
+    # d[1, :controller] = controller         # controller type
+    insertcols!(d, size(d, 2) + 1, :MPCstages => o.numstages)
+    # d[1, :MPCstages] = o.numstages         # number of stages for MPC model
+    insertcols!(d, size(d, 2) + 1, :currMPCstage => currMPCstage)
+    # d[1, :currMPCstage] = currMPCstage     # current MPC prediction stage used to advance between MPC optimization periods
+    insertcols!(d, size(d, 2) + 1, :soltime => soltime)
+    # d[1, :soltime] = soltime               # solution time for MPC if applicable
+    insertcols!(d, size(d, 2) + 1, :looptime => looptime)
+    # d[1, :looptime] = looptime             # time to execute one single sample loop
+    insertcols!(d, size(d, 2) + 1, :penaltyparam => o.penalty)
+    # d[1, :penaltyparam] = o.penalty        # penalty parameter
+    insertcols!(d, size(d, 2) + 1, :experiment => experiment)
+    #d[1, :experiment] = experiment         # type of experiment
 
     # store slack value
-    d[1, :slack] = controller == "MPC" ? JuMP.value(slack) : 1e-27
+    insertcols!(d, size(d, 2) + 1, :slack => controller == "MPC" ? JuMP.value(slack) : 1e-27)
+    # d[1, :slack] = controller == "MPC" ? JuMP.value(slack) : 1e-27
 
     # store timestamp for openloop experiments
     if experiment == "openloop"
-        d[:current_minute] = dict["current_minute"]
+        insertcols!(d, size(d, 2) + 1, :current_minute => dict["current_minute"])
+        # d[:current_minute] = dict["current_minute"]
     end
 
      # concatenate dataframes
@@ -980,7 +994,8 @@ function saveresults(dfMeasurements::DataFrames.DataFrame,
     if experiment == "closeloop"
         for f = 1:p.numfloors, z = 1:p.numzones
             name = Symbol("load_f$(f)z$z")
-            d[1, name] = load[f, z, 1]
+            insertcols!(d, size(d, 2) + 1, name => load[f, z, 1])
+            # d[1, name] = load[f, z, 1]
         end
     end
 
@@ -989,15 +1004,18 @@ function saveresults(dfMeasurements::DataFrames.DataFrame,
         # supply-air temperature setpoint AHU
         name = Symbol("floor$(f)_aHU_con_oveTSetSupAir_u")
         if unit == "Kelvin"
-            d[1, name] = dfSetpoints[1, name] - 273.15 # store as celsius
+            insertcols!(d, size(d, 2) + 1, name => dfSetpoints[1, name] - 273.15)
+            # d[1, name] = dfSetpoints[1, name] - 273.15 # store as celsius
         else
-            d[1, name] = dfSetpoints[1, name]  # already in celsius
+            insertcols!(d, size(d, 2) + 1, name => dfSetpoints[1, name])
+            # d[1, name] = dfSetpoints[1, name]  # already in celsius
         end
         for z = 1:p.numzones
             # discharge-air temperatures at zones
             # these are for saving purposes only, so will be kept as they get calculated, in Celsius
             name = Symbol("floor$(f)_zon$(z)_oveTSetDisAir_u")
-            d[1, name] = dfSetpoints[1, name] # already in celsius
+            insertcols!(d, size(d, 2) + 1, name => dfSetpoints[1, name])
+            # d[1, name] = dfSetpoints[1, name] # already in celsius
         end
     end
 
