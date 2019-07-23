@@ -746,11 +746,11 @@ function setoverrides!(target::DataFrames.DataFrame,
         # filter list of all variable names for setpoints
         # setpoints = filter!(x -> occursin("set_", String(x)), names(source)) # this line is not needed anymore as we store set points in a separate vector 
         # copy corresponding values in target dataframe
-        for col in names(source) # setpoints
-            @printf("\n============= %s ================\n", col)
-            target[col] = 0.0
-            target[1, col] = source[1, col]
-        end
+        #for col in names(source) # setpoints
+        #    target[col] = 0.0
+        #    target[1, col] = source[1, col]
+        #end
+        target = source
 
         # special case: 5:59 am (maximize the flow)
         #if minute_of_day == 6 * 60.0 - 1.0
