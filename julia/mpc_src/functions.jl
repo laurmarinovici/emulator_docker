@@ -999,6 +999,7 @@ function saveresults(dfMeasurements::DataFrames.DataFrame,
         end
     end
 
+    @printf(names(df))
     # store setpoint temperatures
     for f = 1:p.numfloors
         # supply-air temperature setpoint AHU
