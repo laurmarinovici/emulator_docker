@@ -999,25 +999,25 @@ function saveresults(dfMeasurements::DataFrames.DataFrame,
         end
     end
 
-    print(names(d))
     # store setpoint temperatures
     for f = 1:p.numfloors
         # supply-air temperature setpoint AHU
         name = Symbol("floor$(f)_aHU_con_oveTSetSupAir_u")
         if unit == "Kelvin"
-            insertcols!(d, size(d, 2) + 1, name => dfSetpoints[1, name] - 273.15)
+            # insertcols!(d, size(d, 2) + 1, name => dfSetpoints[1, name] - 273.15)
             # d[1, name] = dfSetpoints[1, name] - 273.15 # store as celsius
-        else
-            insertcols!(d, size(d, 2) + 1, name => dfSetpoints[1, name])
+            d[1, name] = d[1, name] - 273.15 # store as celsius
+        # else
+            # insertcols!(d, size(d, 2) + 1, name => dfSetpoints[1, name])
             # d[1, name] = dfSetpoints[1, name]  # already in celsius
         end
-        for z = 1:p.numzones
+        #for z = 1:p.numzones
             # discharge-air temperatures at zones
             # these are for saving purposes only, so will be kept as they get calculated, in Celsius
-            name = Symbol("floor$(f)_zon$(z)_oveTSetDisAir_u")
-            insertcols!(d, size(d, 2) + 1, name => dfSetpoints[1, name])
+        #    name = Symbol("floor$(f)_zon$(z)_oveTSetDisAir_u")
+        #    insertcols!(d, size(d, 2) + 1, name => dfSetpoints[1, name])
             # d[1, name] = dfSetpoints[1, name] # already in celsius
-        end
+        #end
     end
 
     # different ways of storing csv file
