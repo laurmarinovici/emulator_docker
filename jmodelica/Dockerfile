@@ -7,7 +7,6 @@ ENV SUNDIALS_HOME $JMODELICA_HOME/ThirdParty/Sundials
 ENV SEPARATE_PROCESS_JVM /usr/lib/jvm/java-8-openjdk-amd64/
 ENV JAVA_HOME /usr/lib/jvm/java-8-openjdk-amd64/
 ENV PYTHONPATH $PYTHONPATH:$JMODELICA_HOME/Python:$JMODELICA_HOME/Python/pymodelica
-ENV USER_NAME=developer
 
 USER root
 
@@ -25,5 +24,4 @@ RUN apt-get update && \
     pip list --format=columns && \
     echo "root:jmodelica" | chpasswd
 
-USER ${USER_NAME}
 WORKDIR $HOME
