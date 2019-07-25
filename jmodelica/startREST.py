@@ -22,7 +22,7 @@ import getopt		# for being able to supply input arguments to the script
 
 # SIMULATION SETUP IMPORT
 # -----------------------
-from simulationSetup import simulationSetup
+from emulatorSetup import emulatorSetup
 # -----------------------
 
 # DEFINE REST REQUESTS
@@ -164,7 +164,7 @@ def main(argv):
 
   # INSTANTIATE SIMULATION
   # ---------------------
-  case = simulationSetup(fmuPath, fmuStep)
+  case = emulatorSetup(fmuPath, fmuStep)
   # ---------------------
 
   # DEFINE ARGUMENT PARSERS

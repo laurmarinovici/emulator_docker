@@ -1,5 +1,5 @@
 """
-.. module:: simulationSetup
+.. module:: emulatorSetup
 
   :platform: Unix, Windows
 
@@ -19,7 +19,7 @@ import numpy as np
 import copy
 import os
 
-class simulationSetup(object):
+class emulatorSetup(object):
     """Class to setup the building emulator (FMU) simulation."""
     
     def __init__(self, fmuPath, fmuStep):
