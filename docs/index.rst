@@ -13,6 +13,7 @@ Using the Building Control Emulator
    
    emulatorPlatform
    jmodelicaDocker
+   buildingEmulatorExamples
 
 Indices and tables
 ==================
