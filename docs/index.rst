@@ -4,7 +4,7 @@
    You can adapt this file completely to your liking, but it should at least
    contain the root `toctree` directive.
 
-Using the emulator
+Using the Building Control Emulator
 ======================================================
 
 .. toctree::

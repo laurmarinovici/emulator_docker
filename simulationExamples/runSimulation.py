@@ -1,12 +1,13 @@
-# -*- coding: utf-8 -*-
 """
-This module is an example python-based testing interface.  It uses the
-``requests`` package to make REST API calls to the test case container,
-which mus already be running.  A controller is tested, which is 
-imported from a different module.
-  
-"""
+.. module:: runSimulation
 
+  :platform: Unix, Windows
+
+  :synopsis: This module simply tests starting and running a simulation within the JModelica docker.
+
+.. moduleauthor:: PNNL
+"""
+# -*- coding: utf-8 -*-
 # GENERAL PACKAGE IMPORT
 # ----------------------
 import requests
@@ -89,7 +90,7 @@ def main(argv):
     with open(measFileName, "w", newline = "") as outFile:
       writer = csv.writer(outFile)
       for line in measurements:
-        writer.writerow(line)
+        writer.writerow([line])
   outFileName = "results.csv"
   if os.path.exists(outFileName):
     os.remove(outFileName)

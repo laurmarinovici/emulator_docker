@@ -12,14 +12,15 @@
 #
 import os
 import sys
-sys.path.insert(0, os.path.abspath('../jmodelica'))
+sys.path.insert(0, os.path.abspath('../emulatorExamples'))
+sys.path.insert(0, os.path.abspath('../simulationExamples'))
 print(sys.path)
 sys.setrecursionlimit(1500)
 
 
 # -- Project information -----------------------------------------------------
 
-project = 'Building control emulator'
+project = 'Building Control Emulator'
 copyright = '2019, PNNL'
 author = 'Laurentiu Marinovici'
 

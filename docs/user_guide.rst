@@ -127,9 +127,9 @@ Inside the `JModelica Docker container`_, the emulator is simulated using a `RES
 
 - implement a test case Python class that defines the API used by the REST requests to perform functions such as advancing the simulation, retrieving test case information, and calculating and reporting results
 
-  **Code documentation -** *testcase.py*
+  **Code documentation -** *emulatorSetup.py*
 
-  .. automodule:: testcase
+  .. automodule:: emulatorSetup
 
   - *Acquire the list of inputs the emulator accepts as control signals*
 
@@ -139,66 +139,66 @@ Inside the `JModelica Docker container`_, the emulator is simulated using a `RES
 
     - *<name>_u* - that represents the actual input value that the control designer calculates
 
-  .. autoclass:: testcase.TestCase
+  .. autoclass:: emulatorSetup.emulatorSetup
     :members: get_inputs
 
   - *Acquire the list of measurements exposed by the emulator*
 
-  .. autoclass:: testcase.TestCase
+  .. autoclass:: emulatorSetup.emulatorSetup
     :members: get_measurements
 
   - *Advance the emulator simulation one step further after providing a set of control inputs to it with*
 
-  .. autoclass:: testcase.TestCase
+  .. autoclass:: emulatorSetup.emulatorSetup
     :members: advance
 
   - *Obtain the name of the emulator*
 
-  .. autoclass:: testcase.TestCase
+  .. autoclass:: emulatorSetup.emulatorSetup
     :members: get_name
 
   - *Obtain the simlation time step in seconds*
 
-  .. autoclass:: testcase.TestCase
+  .. autoclass:: emulatorSetup.emulatorSetup
     :members: get_step
 
   - *Set the simulation time step in seconds*
 
-  .. autoclass:: testcase.TestCase
+  .. autoclass:: emulatorSetup.emulatorSetup
     :members: set_step
 
   - *Obtain full trajectories of measurements and control inputs*
 
-  .. autoclass:: testcase.TestCase
+  .. autoclass:: emulatorSetup.emulatorSetup
     :members: get_results
 
   - *Obtain key performance indicator (kpi)*
 
-  .. autoclass:: testcase.TestCase
+  .. autoclass:: emulatorSetup.emulatorSetup
     :members: get_kpis
 
 - instantiate the emulator and define the REST API to interact with it through different requests
 
-  **Code documentation -** *restapi.py*
+  **Code documentation -** *startREST.py*
 
-  .. automodule:: restapi
+  .. automodule:: startREST
 
-  .. autoclass:: restapi.Advance
+  .. autoclass:: startREST.Advance
     :members:
 
-  .. autoclass:: restapi.Inputs
+  .. autoclass:: startREST.Inputs
     :members:
   
-  .. autoclass:: restapi.Measurements
+  .. autoclass:: startREST.Measurements
     :members:
   
-  .. autoclass:: restapi.Results
+  .. autoclass:: startREST.Results
     :members:
   
-  .. autoclass:: restapi.KPI
+  .. autoclass:: startREST.KPI
     :members:
   
-  .. autoclass:: restapi.Name
+  .. autoclass:: startREST.Name
     :members:
 
 Running emulator simulation - Example
@@ -217,7 +217,7 @@ Running emulator simulation - Example
 
 .. code::
 
-  docker pull <..................>
+  docker pull laurmarinovici/building_control_emulator:latest
 
 3. Running
 
@@ -225,13 +225,13 @@ Running emulator simulation - Example
 
   docker images
 
-should return something similar to
+should return a list of Docker images, which should include something similar to
 
-+-------------------+----------+------------------+----------------+--------------+
-| REPOSITORY        | TAG      | IMAGE ID         | CREATED        | SIZE         |
-+===================+==========+==================+================+==============+
-| boptest_testcase3 | latest   | 52bae37ee322     | 3 weeks ago    | 1.27GB       |
-+-------------------+----------+------------------+----------------+--------------+
++-------------------------------------------+----------+------------------+----------------+--------------+
+| REPOSITORY                                | TAG      | IMAGE ID         | CREATED        | SIZE         |
++===========================================+==========+==================+================+==============+
+| blaurmarinovici/building_control_emulator | latest   | 04f1b11d5bd6     | 31 hours ago   | 1.69GB       |
++-------------------------------------------+----------+------------------+----------------+--------------+
 
 4. Create the JModelica Docker container by running
 
@@ -256,7 +256,7 @@ points to the correct location and name of the emulator FMU.
 
 .. code::
 
-  python restapi.py
+  python startREST.py
 
 which will now wait for requests to access the emulator to update control actions or request measurements.
 
