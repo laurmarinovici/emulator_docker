@@ -58,6 +58,8 @@ Inside the JModelica Docker container
 
     Figure 1. Emulator Docker diagram
 
+`JModelica Docker container`_ is build on an Ubuntu distribution version *16.04.6 LTS (Xenial Xerus)*.
+
 Inside the `JModelica Docker container`_, the emulator is simulated using a `REST`_ (REpresentational State Transfer) API to
 
 .. _REST: https://restfulapi.net
