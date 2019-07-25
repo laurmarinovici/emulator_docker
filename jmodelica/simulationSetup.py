@@ -1,11 +1,11 @@
 """
-.. module:: testcase
+.. module:: simulationSetup
 
   :platform: Unix, Windows
 
   :synopsis: This module defines the API to the test case used by the REST requests to perform functions such as advancing the simulation, retreiving test case information, and calculating and reporting results.
 
-.. moduleauthor:: Sen Huang
+.. moduleauthor:: PNNL
 """
 # -*- coding: utf-8 -*-
 """
@@ -17,22 +17,17 @@ information, and calculating and reporting results.
 from pyfmi import load_fmu
 import numpy as np
 import copy
-import config
+import os
 
-class TestCase(object):
-    '''Class that implements the test case.
+class simulationSetup(object):
+    """Class to setup the building emulator (FMU) simulation."""
     
-    '''
-    
-    def __init__(self):
-        '''Constructor.
+    def __init__(self, fmuPath, fmuStep):
+        """Constructor.
         
-        '''
+        """
         
-        # Get configuration information
-        con = config.get_config()
-        # Define simulation model
-        self.fmupath = con['fmupath']
+        self.fmupath = fmuPath
         # Load fmu
         self.fmu = load_fmu(self.fmupath)
         # Get version
@@ -55,16 +50,15 @@ class TestCase(object):
         self.u_store = copy.deepcopy(self.u)
         # Set default options
         self.options = self.fmu.simulate_options()
-#        self.options['CVode_options']['rtol'] = 1e-6 
         # Set default communication step
-        self.set_step(con['step'])
+        self.set_step(fmuStep) # (con['step'])
         # Set initial simulation start
         self.start_time = 0
         self.initialize = True
         self.options['initialize'] = self.initialize
         
-    def advance(self,u):
-        '''Advances the test case model simulation forward one step.
+    def advance(self, u):
+        """Advances the test case model simulation forward one step.
         
         Parameters
         ----------
@@ -78,7 +72,7 @@ class TestCase(object):
             Contains the measurement data at the end of the step.
             {<measurement_name> : <measurement_value>}
             
-        '''
+        """
         
         # Set final time
         self.final_time = self.start_time + self.step
@@ -88,16 +82,10 @@ class TestCase(object):
             u_trajectory = self.start_time
             for key in u.keys():
                 if key != 'time':
-                    # if key.find("oveOutAirFra_u") > 0 or key.find("oveHeaOut_u") > 0:
-                    #    print("key: ", key)
-                    #    print("value:", u[key])
                     value = float(u[key])
                     u_list.append(key)
                     u_trajectory = np.vstack((u_trajectory, value))
             input_object = (u_list, np.transpose(u_trajectory))
-            # print("u_list length: ", len(u_list))
-            # print("u_trajectory length: ", len(u_trajectory))
-            # print(input_object)
         else:
             input_object = None
         # Simulate
@@ -115,26 +103,25 @@ class TestCase(object):
             self.u_store[key] = self.u_store[key] + res[key].tolist()[1:] 
         # Advance start time
         self.start_time = self.final_time
-        # Prevent inialize
+        # Prevent initialize
         self.initialize = False
         
         return self.y
 
-    def reset(self,u):
-        '''Reset the test.
+    def reset(self, u):
+        """Reset the test.
         
-        '''
-        
-        self.__init__()
+        """
+
         self.start_time = float(u)
 
     def get_step(self):
-        '''Returns the current simulation step in seconds.'''
+        """Returns the current simulation step in seconds."""
 
         return self.step
 
-    def set_step(self,step):
-        '''Sets the simulation step in seconds.
+    def set_step(self, step):
+        """Sets the simulation step in seconds.
         
         Parameters
         ----------
@@ -145,14 +132,14 @@ class TestCase(object):
         -------
         None
         
-        '''
+        """
         
         self.step = float(step)
         
         return None
         
     def get_inputs(self):
-        '''Returns a list of control input names.
+        """Returns a list of control input names.
         
         Parameters
         ----------
@@ -163,14 +150,14 @@ class TestCase(object):
         inputs : list
             List of control input names.
             
-        '''
+        """
 
         inputs = self.u.keys()
         
         return inputs
         
     def get_measurements(self):
-        '''Returns a list of measurement names.
+        """Returns a list of measurement names.
         
         Parameters
         ----------
@@ -181,14 +168,14 @@ class TestCase(object):
         measurements : list
             List of measurement names.
             
-        '''
+        """
 
         measurements = self.y.keys()
         
         return measurements
         
     def get_results(self):
-        '''Returns measurement and control input trajectories.
+        """Returns measurement and control input trajectories.
         
         Parameters
         ----------
@@ -201,13 +188,13 @@ class TestCase(object):
             trajectories as lists.
             {'y':{<measurement_name>:<measurement_trajectory>},
             'u':{<input_name>:<input_trajectory>}}
-        '''
+        """
         Y = {'y':self.y_store, 'u':self.u_store}
         
         return Y
         
     def get_kpis(self):
-        '''Returns KPI data.
+        """Returns KPI data.
         
         Requires standard sensor signals.
         
@@ -220,7 +207,7 @@ class TestCase(object):
             Dictionary containing KPI names and values.
             {<kpi_name>:<kpi_value>}
         
-        '''
+        """
         
         kpi = dict()
         # Energy
@@ -230,7 +217,7 @@ class TestCase(object):
         return kpi
         
     def get_name(self):
-        '''Returns the name of the test case fmu.
+        """Returns the name of the FMU being simulated.
         
         Parameters
         ----------
@@ -239,10 +226,10 @@ class TestCase(object):
         Returns
         -------
         name : str
-            Name of test case fmu.
+            Name of FMU being simulated.
             
-        '''
+        """
         
-        name = self.fmupath[7:-4]
+        name = os.path.splitext(os.path.basename(self.fmupath))[0]
         
         return name
