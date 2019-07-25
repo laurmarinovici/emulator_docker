@@ -107,7 +107,7 @@ Class *emulatorSetup* has been implemented to define the REST API requests to pe
   .. autoclass:: emulatorSetup.emulatorSetup
     :members: get_name
 
-  - *Obtain the simlation time step in seconds*
+  - *Obtain the simulation time step in seconds*
 
   .. autoclass:: emulatorSetup.emulatorSetup
     :members: get_step
@@ -127,7 +127,17 @@ Class *emulatorSetup* has been implemented to define the REST API requests to pe
   .. autoclass:: emulatorSetup.emulatorSetup
     :members: get_kpis
 
-Script *startREST* instantiate the building emulator by loading the desired FMU file and setting up the length of the time interval for which the emulator will run until finishing or being interrupted to receive an external control action. It also opens up the communication channels through which HTTP requests can be made to access the building emulator. 
+Script *startREST* instantiate the building emulator by loading the desired FMU file and setting up the length of the time interval (in seconds) for which the emulator will run until finishing or being interrupted to receive an external control action. It also opens up the communication channels through which HTTP requests can be made to access the building emulator. The scripts should be called using:
+
+.. code::
+
+  python startREST.py -p ./models/wrapped.fmu -s 60
+
+or
+
+.. code::
+
+  python startREST.py --fmuPath=./models/wrapped.fmu --fmuStep=60
 
   **Code documentation -** *startREST.py*
 
