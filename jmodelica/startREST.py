@@ -55,12 +55,9 @@ class Reset(Resource):
   def put(self):
     """PUT request to reset the test."""
     u = self.parser_reset.parse_args()
-    # print 'yes'
-    print(u)
     start = u['start']
-    print(start)
     self.case.reset(start)
-    return "Simulation reset."
+    return start
 
         
 class Step(Resource):
