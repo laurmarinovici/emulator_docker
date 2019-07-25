@@ -11,7 +11,8 @@ Using the Building Control Emulator
    :maxdepth: 5
    :caption: Contents:
    
-   user_guide
+   emulatorPlatform
+   jmodelicaDocker
 
 Indices and tables
 ==================
