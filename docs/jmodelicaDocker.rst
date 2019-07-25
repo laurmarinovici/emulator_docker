@@ -39,8 +39,10 @@ should return a list of Docker images, which should include something similar to
 .. code::
 
   docker run -it --rm -p="127.0.0.1:5000:5000" \
-           --mount type=bind,source=<path to host computer folder to bind with container folder>,destination=<path to folder in the container binded to host folder> \
+           --mount type=bind,source=<path to host computer folder to bind with container folder>,destination=<path to folder in the container bound to host folder> \
            --network=host --name=<container name> <image name> bash
+
+  Normally, the host computer folder bound to a folder within the container would be the folder that contains the models and the running scripts (developed or downloaded from the github repository).
 
 5. Once the container has been created, it should show up listed when running
 
@@ -58,15 +60,22 @@ Inside the JModelica Docker container
 
     Figure 1. Emulator Docker diagram
 
-`JModelica Docker container`_ is build on an Ubuntu distribution version *16.04.6 LTS (Xenial Xerus)*.
+`JModelica Docker container`_ is build on an Ubuntu distribution version *16.04.6 LTS (Xenial Xerus)*. It contains `JModelica`_ and the neccessary Python modules:
 
-Inside the `JModelica Docker container`_, the emulator is simulated using a `REST`_ (REpresentational State Transfer) API to
+- `PyModelica`_ - for compiling Modelica models intu FMUs
+
+.. _PyModelica: https://pypi.org/project/PyModelica/
+
+- `PyFMI`_ - for loading and interacting with the FMU representing the building emulator
+
+.. _PyFMI: https://pypi.org/project/PyFMI/
+
+
+Inside the `JModelica Docker container`_, the building emulator is loaded and simulated/controlled using a `REST`_ (REpresentational State Transfer) API.
 
 .. _REST: https://restfulapi.net
 
-- configure the test case, that is specify the emulator to be simulated and set the simulation time step in seconds (config.py)
-
-- implement a test case Python class that defines the API used by the REST requests to perform functions such as advancing the simulation, retrieving test case information, and calculating and reporting results
+Class *emulatorSetup* has been implemented to define the REST API requests to perform functions such as advancing the simulation, retrieving test case information, and calculating and reporting results.
 
   **Code documentation -** *emulatorSetup.py*
 
@@ -118,7 +127,7 @@ Inside the `JModelica Docker container`_, the emulator is simulated using a `RES
   .. autoclass:: emulatorSetup.emulatorSetup
     :members: get_kpis
 
-- instantiate the emulator and define the REST API to interact with it through different requests
+Script *startREST* instantiate the building emulator by loading the desired FMU file and setting up the length of the time interval for which the emulator will run until finishing or being interrupted to receive an external control action. It also opens up the communication channels through which HTTP requests can be made to access the building emulator. 
 
   **Code documentation -** *startREST.py*
 
