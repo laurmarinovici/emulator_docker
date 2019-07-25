@@ -77,7 +77,7 @@ Inside the `JModelica Docker container`_, the building emulator is loaded and si
 
 Class *emulatorSetup* has been implemented to define the REST API requests to perform functions such as advancing the simulation, retrieving test case information, and calculating and reporting results.
 
-  **Code documentation -** *emulatorSetup.py*
+**Code documentation -** *emulatorSetup.py*
 
   .. automodule:: emulatorSetup
 
@@ -139,7 +139,7 @@ or
 
   python startREST.py --fmuPath=./models/wrapped.fmu --fmuStep=60
 
-  **Code documentation -** *startREST.py*
+**Code documentation -** *startREST.py*
 
   .. automodule:: startREST
 
