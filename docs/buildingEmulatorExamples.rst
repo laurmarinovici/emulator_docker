@@ -65,13 +65,13 @@ Methodology
 
 where */Users/mari009/PNNL_Projects/GitHubRepositories/BuildingControlEmulator/* represents the local folder where the building control emulator Github repository has been cloned to, and */mnt/examples* is just a folder on the already started *jmodelica_container*.
 
-2. At the opened terminal inside the container:
+3. At the opened terminal inside the container:
 
 .. code::
 
   cd /mnt/examples
 
-3. Run
+4. Run
 
 .. code::
 
@@ -88,7 +88,7 @@ The app should start showing
   * Debug mode: off
   * Running on http://0.0.0.0:5000/ (Press CTRL+C to quit)
 
-4. At a different terminal
+5. At a different terminal
 
 .. code::
 
@@ -96,7 +96,7 @@ The app should start showing
 
   python runSimulation.py --url="http://0.0.0.0:5000" --dayOfYear=200 --dayOffset=0 --simDuration=1200 --fmuStep=300
 
-5. After 4 300-second intervals, within which the building emulator is simulated, the simulation ends, and the user can observe the following output files:
+6. After 4 300-second intervals, within which the building emulator is simulated, the simulation ends, and the user can observe the following output files:
 
   - in *<..>/BuildingControlEmulator/simulationExamples*: 
 
