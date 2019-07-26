@@ -110,9 +110,9 @@ The app should start showing
 
       - *<control signal name>_u* - the actual value of the control signal for that particular time
 
- - in *<..>/BuildingControlEmulator/emulatorExamples*:
+  - in *<..>/BuildingControlEmulator/emulatorExamples*:
 
-   - *<FMU name>_result.mat* - *THIS STILL NEED TO BE WORKED OUT*
+    - *<FMU name>_result.mat* - *THIS STILL NEED TO BE WORKED OUT*
 
 List of examples
 ----------------
