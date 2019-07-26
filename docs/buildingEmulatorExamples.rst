@@ -112,7 +112,7 @@ The app should start showing
 
  - in *<..>/BuildingControlEmulator/emulatorExamples*:
 
-   - *<FMU name>_result.mat*
+   - *<FMU name>_result.mat* - *THIS STILL NEED TO BE WORKED OUT*
 
 List of examples
 ----------------
@@ -121,6 +121,6 @@ The following examples should be found in */emulatorExamples/models/*:
 
 - *wrapped.fmu*
 
-- *LargeOffice*
+- *LargeOffice* - *NEED DESCRIPTION*
 
-- *LargeOfficeFDD*
+- *LargeOfficeFDD* - *NEED DESCRIPTION*
